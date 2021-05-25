@@ -10,22 +10,22 @@ using NotNetflix.Models;
 
 namespace NotNetflix.Controllers
 {
-    public class UtilizadorsController : Controller
+    public class UtilizadoresController : Controller
     {
         private readonly NotNetflixDataBase _context;
 
-        public UtilizadorsController(NotNetflixDataBase context)
+        public UtilizadoresController(NotNetflixDataBase context)
         {
             _context = context;
         }
 
-        // GET: Utilizadors
+        // GET: Utilizadores
         public async Task<IActionResult> Index()
         {
             return View(await _context.Utilizador.ToListAsync());
         }
 
-        // GET: Utilizadors/Details/5
+        // GET: Utilizadores/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,13 +43,13 @@ namespace NotNetflix.Controllers
             return View(utilizador);
         }
 
-        // GET: Utilizadors/Create
+        // GET: Utilizadores/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Utilizadors/Create
+        // POST: Utilizadores/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -65,7 +65,7 @@ namespace NotNetflix.Controllers
             return View(utilizador);
         }
 
-        // GET: Utilizadors/Edit/5
+        // GET: Utilizadores/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,7 +81,7 @@ namespace NotNetflix.Controllers
             return View(utilizador);
         }
 
-        // POST: Utilizadors/Edit/5
+        // POST: Utilizadores/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -116,7 +116,7 @@ namespace NotNetflix.Controllers
             return View(utilizador);
         }
 
-        // GET: Utilizadors/Delete/5
+        // GET: Utilizadores/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -134,7 +134,7 @@ namespace NotNetflix.Controllers
             return View(utilizador);
         }
 
-        // POST: Utilizadors/Delete/5
+        // POST: Utilizadores/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

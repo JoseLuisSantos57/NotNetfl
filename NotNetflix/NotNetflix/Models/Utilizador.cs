@@ -40,7 +40,7 @@ namespace NotNetflix.Models
         [RegularExpression("(00)?([0-9]{2,3})?[1-9][0-9]{8}", 
                            ErrorMessage = "Escreva um nº Telemóvel com 9 algarismos. Pode acrescentar o indicativo.")]
         [Display(Name = "Telemóvel")]
-        public int N_telemovel { get; set; }
+        public string N_telemovel { get; set; }
 
         public ICollection<Filme> ListasDeFilmes { get; set; }
     }

@@ -12,11 +12,14 @@ namespace NotNetflix.Data
         //construroe da classe NotNetflixDataBase
         //indicar onde está a BD à qual as tabelas estão associadas
         public NotNetflixDataBase(DbContextOptions<NotNetflixDataBase> options):base(options){}
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelbuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelbuilder);
 
             //inserir dados da base de dados aqui
+            /*modelbuilder.Entity<Filme>().HasData(
+                new Filme { Id = 1, }
+                )*/
         }
 
         public DbSet<Filme> Filme { get; set; }
