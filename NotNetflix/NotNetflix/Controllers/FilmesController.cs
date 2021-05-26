@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,11 +15,19 @@ namespace NotNetflix.Controllers
 {
     public class FilmesController : Controller
     {
+        
+        /// <summary>
+        /// representa a base de dados do projeto
+        /// </summary>
         private readonly NotNetflixDataBase _context;
 
-        public FilmesController(NotNetflixDataBase context)
+        private readonly IWebHostEnvironment _caminho;
+
+        public FilmesController(NotNetflixDataBase context, IWebHostEnvironment caminho)
         {
             _context = context;
+            _caminho = caminho;
+
         }
 
         // GET: Filmes
@@ -54,8 +65,76 @@ namespace NotNetflix.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Path,Titulo,Descricao,Data,Duracao,Rating")] Filme filme)
+        public async Task<IActionResult> Create([Bind("Id,Path,Titulo,Descricao,Data,Duracao,Rating")] Filme filme, IFormFile filmefile)
         {
+
+            /* processar o ficheiro
+         *   - existe ficheiro?
+         *     - se não existe, o q fazer?  => gerar uma msg erro, e devolver controlo à View
+         *     - se continuo, é pq ficheiro existe
+         *       - mas, será q é do tipo correto?
+         *         - avaliar se é imagem,
+         *           - se sim: - especificar o seu novo nome
+         *                     - associar ao objeto 'foto', o nome deste ficheiro
+         *                     - especificar a localização                     
+         *                     - guardar ficheiro no disco rígido do servidor
+         *           - se não  => gerar uma msg erro, e devolver controlo à View
+        */
+            //variável auxiliar
+            string nomeFilme = "";
+
+            //verificar se existe ficheiro
+            if (filmefile==null)
+            {
+                //apresentar mensagem a pedir o ficheiro
+                ModelState.AddModelError("", "Adicione por favor o ficheiro do filme");
+
+                //devolve o controlo à view
+                ViewData["FilmeFK?"] = new SelectList(_context.Filme.OrderBy(c => c.Titulo), "Id", "Titulo");
+                return View(filme);
+            }
+            else //existe ficheiro
+            {
+                //verificar se ele é válido
+                if(filmefile.ContentType == "video/webm")
+                {
+                    //definir o nome do ficheiro
+                    Guid g;
+                    g = Guid.NewGuid();
+
+                    nomeFilme = filme.Titulo + "_" + g.ToString();
+
+                    //determinar a expressão do nome do filme
+                    string extensao = Path.GetExtension(filmefile.FileName).ToLower();
+
+                    nomeFilme = nomeFilme + extensao;
+
+                    filme.Path = nomeFilme;
+
+                    string localizacaoFicheiro = _caminho.WebRootPath;
+                    nomeFilme = Path.Combine(localizacaoFicheiro, "filme", nomeFilme);
+                }
+                else
+                {
+                    //ficheiro não é válido
+                    //adicionar mensagem de erro
+                    ModelState.AddModelError("", "O formato do ficheiro introduzido não é válido");
+
+
+                }
+            }
+
+
+
+
+
+
+
+
+
+            //26/5/2021-modelstate não é válido sabe-se lá porquê
+
+
             if (ModelState.IsValid)
             {
                 _context.Add(filme);
