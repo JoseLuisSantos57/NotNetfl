@@ -36,7 +36,7 @@ namespace NotNetflix.Models
     /// <summary>
     /// Resumo do filme
     /// </summary>
-    [Required]
+  
     public string Descricao { get; set; }
 
     /// <summary>
@@ -47,7 +47,7 @@ namespace NotNetflix.Models
     /// <summary>
     /// Duração do filme
     /// </summary>
-    [Required]
+   
     public int Duracao { get; set; }
 
     /// <summary>

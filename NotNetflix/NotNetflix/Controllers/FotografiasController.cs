@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -18,29 +20,18 @@ namespace NotNetflix.Controllers
         /// Representa a base de dados do projeto
         /// </summary>
         private readonly NotNetflixDataBase _context;
+        private readonly IWebHostEnvironment _caminho;
 
-        public FotografiasController(NotNetflixDataBase context)
+        public FotografiasController(NotNetflixDataBase context, IWebHostEnvironment caminho)
         {
             _context = context;
+            _caminho = caminho;
         }
 
         // GET: Fotografias
         public async Task<IActionResult> Index()
         {
-            /*criação de uma variável que vai conter um conjunto de dados 
-             f => f.Movie  <---- expressão 'lambda'
-         *  ^ ^  ^
-         *  | |  |
-         *  | |  representa cada um dos registos individuais da tabela das Fotografias
-         *  | |  e associa a cada fotografia o seu respetivo filme
-         *  | |  equivalente à parte WHERE do comando SQL
-         *  | |
-         *  | um símbolo que separa os ramos da expressão
-         *  |
-         *  representa todos registos das fotografias
-             
-             
-             */
+
             var notNetflixDataBase = _context.Fotografia.Include(f => f.Movie);
             return View(await notNetflixDataBase.ToListAsync());
         }
@@ -76,27 +67,52 @@ namespace NotNetflix.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Path,FilmeFK")] Fotografia fotografia, IFormFile fotofilme)
+        public async Task<IActionResult> Create([Bind("Id,Path,FilmeFK")] Fotografia foto, IFormFile fotofilme)
         {
+
             //avaliar se o gestor escolheu um filme para associar à fotografia
-            if (fotografia.FilmeFK < 0)
+            if (foto.FilmeFK < 0)
             {
                 //não foi selecionado um filme válido
                 ModelState.AddModelError("","Não foi selecionado um filme válido");
 
             }
 
+            string nomeImagem = "";
 
+            if(fotofilme == null)
+            {
+                ModelState.AddModelError("", "Adicione a fotografia do filme");
+                ViewData["FilmeFK"] = new SelectList(_context.Filme, "Id", "Descricao", foto.FilmeFK);
+                return View(foto);
+            }
+            else
+            {
+                if(fotofilme.ContentType == "image/jpeg" || fotofilme.ContentType == "image/png")
+                {
+                    Guid g;
+                    g = Guid.NewGuid();
+                    nomeImagem = fotofilme + "_" + g.ToString();
+                    string extensao = Path.GetExtension(fotofilme.FileName).ToLower();
+
+                    nomeImagem = nomeImagem + extensao;
+
+                    foto.Fotos = nomeImagem;
+
+                    string localizacao = _caminho.WebRootPath;
+                    nomeImagem = Path.Combine(localizacao, "foto", nomeImagem);
+                }
+            }
 
             if (ModelState.IsValid)
             {
                 //adiciona a fotografia à base de dados 
-                _context.Add(fotografia);
+                _context.Add(foto);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FilmeFK"] = new SelectList(_context.Filme, "Id", "Descricao", fotografia.FilmeFK);
-            return View(fotografia);
+            ViewData["FilmeFK"] = new SelectList(_context.Filme, "Id", "Descricao", foto.FilmeFK);
+            return View(foto);
         }
 
         // GET: Fotografias/Edit/5

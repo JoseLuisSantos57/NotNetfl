@@ -119,7 +119,8 @@ namespace NotNetflix.Controllers
                     //ficheiro não é válido
                     //adicionar mensagem de erro
                     ModelState.AddModelError("", "O formato do ficheiro introduzido não é válido");
-
+                    ViewData["FilmeFK?"] = new SelectList(_context.Filme.OrderBy(c => c.Titulo), "Id", "Titulo");
+                    return View(filme);
 
                 }
             }
@@ -133,9 +134,9 @@ namespace NotNetflix.Controllers
 
 
             //26/5/2021-modelstate não é válido sabe-se lá porquê
+           
 
-
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _context.Add(filme);
                 await _context.SaveChangesAsync();

@@ -25,5 +25,6 @@ namespace NotNetflix.Models
         public int FilmeFK { get; set; }
 
         public Filme Movie { get; set; }
+        public string Fotos { get;  set; }
     }
 }
