@@ -20,12 +20,6 @@ namespace NotNetflix.Data
             /*modelbuilder.Entity<Filme>().HasData(
                 new Filme { Id = 1, }
                 )*/
-            modelbuilder.Entity<Filme>().HasData(
-                new Filme { Id = 1, Path = "big-buck-bunny_trailer.webvm", Titulo = "Big Buck", Data = new DateTime(2019, 5, 20), Duracao = 1, Rating = 10 }
-
-
-
-                );
         }
 
         public DbSet<Filme> Filme { get; set; }
