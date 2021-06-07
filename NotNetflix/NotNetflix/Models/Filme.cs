@@ -11,7 +11,7 @@ namespace NotNetflix.Models
         public Filme(){
             ListasDeUtilizadores = new HashSet<Utilizador>();
             ListasDeGeneros = new HashSet<Genero>();
-            ListasDeFotografias = new HashSet<Fotografia>();
+            ListasDeFotografias = new HashSet<Fotografias>();
         }
 
     /// <summary>
@@ -23,20 +23,19 @@ namespace NotNetflix.Models
     /// <summary>
     /// Caminho da localização do filme
     /// </summary>
-    [Required]
     public string Path { get; set; }
 
     /// <summary>
     /// Titulo do filme
     /// </summary>
-    [Required]
+    
     [StringLength(50)]
     public string Titulo { get; set; }
 
     /// <summary>
     /// Resumo do filme
     /// </summary>
-    [Required]
+    
     public string Descricao { get; set; }
 
     /// <summary>
@@ -47,7 +46,7 @@ namespace NotNetflix.Models
     /// <summary>
     /// Duração do filme
     /// </summary>
-    [Required]
+    
     public int Duracao { get; set; }
 
     /// <summary>
@@ -63,6 +62,6 @@ namespace NotNetflix.Models
 
     public ICollection<Genero> ListasDeGeneros { get; set; }
 
-    public ICollection<Fotografia> ListasDeFotografias { get; set; }
+    public ICollection<Fotografias> ListasDeFotografias { get; set; }
     }
 }

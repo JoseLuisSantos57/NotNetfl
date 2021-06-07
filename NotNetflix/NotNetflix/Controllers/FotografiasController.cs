@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -19,9 +21,17 @@ namespace NotNetflix.Controllers
         /// </summary>
         private readonly NotNetflixDataBase _context;
 
-        public FotografiasController(NotNetflixDataBase context)
+        /// <summary>
+        /// contém os atributos da app web no servidor
+        /// </summary>
+        private readonly IWebHostEnvironment _caminho;
+
+
+
+        public FotografiasController(NotNetflixDataBase context, IWebHostEnvironment caminho)
         {
             _context = context;
+            _caminho = caminho;
         }
 
         // GET: Fotografias
@@ -42,6 +52,7 @@ namespace NotNetflix.Controllers
              
              */
             var notNetflixDataBase = _context.Fotografia.Include(f => f.Movie);
+            //invoca a view, entragando-lhe a lista de registos
             return View(await notNetflixDataBase.ToListAsync());
         }
 
@@ -67,19 +78,24 @@ namespace NotNetflix.Controllers
         // GET: Fotografias/Create
         public IActionResult Create()
         {
-            ViewData["FilmeFK"] = new SelectList(_context.Filme, "Id", "Descricao");
+            ViewData["FilmeFK"] = new SelectList(_context.Filme.OrderBy(f => f.Titulo), "Id", "Titulo");
             return View();
         }
+
+
+
+
+
 
         // POST: Fotografias/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Path,FilmeFK")] Fotografia fotografia, IFormFile fotofilme)
+        public async Task<IActionResult> Create([Bind("FilmeFK")] Fotografias foto, IFormFile fotofilme)
         {
             //avaliar se o gestor escolheu um filme para associar à fotografia
-            if (fotografia.FilmeFK < 0)
+            if (foto.FilmeFK < 0)
             {
                 //não foi selecionado um filme válido
                 ModelState.AddModelError("","Não foi selecionado um filme válido");
@@ -87,16 +103,70 @@ namespace NotNetflix.Controllers
             }
 
 
+            /* processar o ficheiro
+             *   - existe ficheiro?
+             *     - se não existe, o q fazer?  => gerar uma msg erro, e devolver controlo à View
+             *     - se continuo, é pq ficheiro existe
+             *       - mas, será q é do tipo correto?
+             *         - avaliar se é imagem,
+             *           - se sim: - especificar o seu novo nome
+             *                     - associar ao objeto 'foto', o nome deste ficheiro
+             *                     - especificar a localização                     
+             *                     - guardar ficheiro no disco rígido do servidor
+             *           - se não  => gerar uma msg erro, e devolver controlo à View
+            */
+
+            // var auxiliar
+            string nomeImagem = "";
+            if(fotofilme == null)
+            {
+                ModelState.AddModelError("", "Adicone por favor a fotografia do filme");
+                ViewData["FilmeFK"] = new SelectList(_context.Filme, "Id", "Descricao", foto.FilmeFK);
+                return View(foto);
+            }
+            else
+            {
+                if(fotofilme.ContentType == "image/jpeg" || fotofilme.ContentType == "image/jpg")
+                {
+                    Guid g;
+                    g = Guid.NewGuid();
+                    nomeImagem = foto.FilmeFK + "_" + g.ToString();
+                    string extensao = Path.GetExtension(fotofilme.FileName).ToLower();
+                    nomeImagem = nomeImagem + extensao;
+
+                    foto.Path = nomeImagem;
+                    string localizacao = _caminho.WebRootPath;
+                    nomeImagem = Path.Combine(localizacao, "fotos", nomeImagem);
+                }
+                else
+                {
+                    ModelState.AddModelError("", "O ficheiro da fotografia não é válido");
+                    ViewData["FilmeFK"] = new SelectList(_context.Filme, "Id", "Descricao", foto.FilmeFK);
+                    return View(foto);
+                }
+
+            }
 
             if (ModelState.IsValid)
             {
-                //adiciona a fotografia à base de dados 
-                _context.Add(fotografia);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+               // try
+               // {
+
+                    //adiciona a fotografia à base de dados 
+                    _context.Add(foto);
+                    await _context.SaveChangesAsync();
+
+                    using var stream = new FileStream(nomeImagem, FileMode.Create);
+                    await fotofilme.CopyToAsync(stream);
+                    return RedirectToAction(nameof(Index));
+             // }
+                /*catch(Exception ex)
+                {
+                    ModelState.AddModelError("", "Ocorreu um erro...");
+                }*/
             }
-            ViewData["FilmeFK"] = new SelectList(_context.Filme, "Id", "Descricao", fotografia.FilmeFK);
-            return View(fotografia);
+            ViewData["FilmeFK"] = new SelectList(_context.Filme, "Id", "Descricao", foto.FilmeFK);
+            return View(foto);
         }
 
         // GET: Fotografias/Edit/5
@@ -121,7 +191,7 @@ namespace NotNetflix.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Path,FilmeFK")] Fotografia fotografia)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Path,FilmeFK")] Fotografias fotografia)
         {
             if (id != fotografia.Id)
             {

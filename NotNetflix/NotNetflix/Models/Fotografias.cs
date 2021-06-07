@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NotNetflix.Models
 {
-    public class Fotografia
+    public class Fotografias
     {
         /// <summary>
         /// Identificão do poster do filme
@@ -18,10 +18,12 @@ namespace NotNetflix.Models
         /// <summary>
         /// Caminho para o poster
         /// </summary>
-        [Required]
         public string Path { get; set; }
         
+
+        //criação da FK que referencia o filme a que pertence a foto
         [ForeignKey(nameof(Movie))]
+        [Display(Name = "Filme")]
         public int FilmeFK { get; set; }
 
         public Filme Movie { get; set; }

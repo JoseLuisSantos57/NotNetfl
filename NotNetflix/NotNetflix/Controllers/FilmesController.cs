@@ -133,13 +133,22 @@ namespace NotNetflix.Controllers
 
 
             //26/5/2021-modelstate não é válido sabe-se lá porquê
-
+            //02/06/2021- modelstate já é válido
 
             if (ModelState.IsValid)
             {
-                _context.Add(filme);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                //try
+                //{
+                    _context.Add(filme);
+                    await _context.SaveChangesAsync();
+                    using var stream = new FileStream(nomeFilme, FileMode.Create);
+                    await filmefile.CopyToAsync(stream);
+                    return RedirectToAction(nameof(Index));
+               // }
+               /* catch(Exception o)
+                {
+
+                }*/
             }
             return View(filme);
         }

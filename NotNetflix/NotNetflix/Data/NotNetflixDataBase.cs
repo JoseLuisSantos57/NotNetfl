@@ -23,7 +23,7 @@ namespace NotNetflix.Data
         }
 
         public DbSet<Filme> Filme { get; set; }
-        public DbSet<Fotografia> Fotografia { get; set; }
+        public DbSet<Fotografias> Fotografia { get; set; }
         public DbSet<Genero> Genero { get; set; }
         public DbSet<GeneroFilme> GeneroFilme { get; set; }
         public DbSet<Utilizador> Utilizador { get; set; }
