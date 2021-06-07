@@ -30,7 +30,6 @@ namespace NotNetflix.Controllers
 
         public FotografiasController(NotNetflixDataBase context, IWebHostEnvironment caminho)
         {
-           
             _context = context;
             _caminho = caminho;
         }
@@ -62,15 +61,15 @@ namespace NotNetflix.Controllers
         {
             if (id == null)
             {
-                return RedirectToAction("Index");
+                return NotFound();
             }
 
             var fotografia = await _context.Fotografia
-                                    .Include(f => f.Movie)
-                                     .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(f => f.Movie)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (fotografia == null)
             {
-                return RedirectToAction("Index");
+                return NotFound();
             }
 
             return View(fotografia);
@@ -173,7 +172,6 @@ namespace NotNetflix.Controllers
         // GET: Fotografias/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-           
             if (id == null)
             {
                 return NotFound();
@@ -184,7 +182,7 @@ namespace NotNetflix.Controllers
             {
                 return NotFound();
             }
-            HttpContext.Session.SetInt32("NumFotoEmEdicao", fotografia.Id);
+            ViewData["FilmeFK"] = new SelectList(_context.Filme, "Id", "Descricao", fotografia.FilmeFK);
             return View(fotografia);
         }
 
@@ -193,38 +191,23 @@ namespace NotNetflix.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Path,FilmeFK")] Fotografias foto)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Path,FilmeFK")] Fotografias fotografia)
         {
-            if (id != foto.Id)
+            if (id != fotografia.Id)
             {
                 return NotFound();
             }
-
-            //recuperar o id fo objeto enviado para o browser
-            var numIdFoto = HttpContext.Session.GetInt32("NumFotoEmEdicao");
-
-            //e compará-lo com o id recebido
-            //se forem iguais, continuamos
-            // se forem diferentes não fazemos a alteração
-            if(numIdFoto==null || numIdFoto!=foto.Id)
-            {
-                // se entrei nesta condiç~~ao houve problemas 
-
-                //redirecionar para a página de início
-                return RedirectToAction("Index");
-            }
-
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(foto);
+                    _context.Update(fotografia);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!FotografiaExists(foto.Id))
+                    if (!FotografiaExists(fotografia.Id))
                     {
                         return NotFound();
                     }
@@ -235,8 +218,8 @@ namespace NotNetflix.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FilmeFK"] = new SelectList(_context.Filme, "Id", "Descricao", foto.FilmeFK);
-            return View(foto);
+            ViewData["FilmeFK"] = new SelectList(_context.Filme, "Id", "Descricao", fotografia.FilmeFK);
+            return View(fotografia);
         }
 
         // GET: Fotografias/Delete/5
