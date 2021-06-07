@@ -25,23 +25,32 @@ namespace NotNetflix
         public IConfiguration Configuration { get; }
 
 
-
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        // This method gets called by the runtime.
+        // Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
 
-            
-            services.AddDatabaseDeveloperPageExceptionFilter();
+            // uso de vars. de sessão
+            services.AddDistributedMemoryCache();
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromSeconds(100);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<NotNetflixDataBase>();
             services.AddControllersWithViews();
 
-
-            //Configurar o acesso à base de dados
+            //************************************************************
+            // configurar o acesso à BD
+            //************************************************************
             services.AddDbContext<NotNetflixDataBase>(
-                options => options.UseSqlServer(Configuration.GetConnectionString("myConnectionString")));
+               options => options.UseSqlServer(Configuration.GetConnectionString("myConnectionString"))
+               );
+
+            //Install-Package Microsoft.EntityFrameworkCore.SqlServer -Version 5.0.4
+
+            //************************************************************
+
 
         }
 
@@ -63,6 +72,9 @@ namespace NotNetflix
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            //permitir o uso de vars. de sessão
+            app.UseSession();
 
             app.UseAuthentication();
             app.UseAuthorization();
