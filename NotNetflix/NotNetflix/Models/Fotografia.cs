@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NotNetflix.Models
 {
-    public class Fotografias
+    public class Fotografia
     {
         /// <summary>
         /// Identificão do poster do filme

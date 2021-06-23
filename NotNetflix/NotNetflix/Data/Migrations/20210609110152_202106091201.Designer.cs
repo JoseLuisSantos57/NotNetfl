@@ -3,36 +3,23 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NotNetflix.Data;
 
 namespace NotNetflix.Data.Migrations
 {
     [DbContext(typeof(NotNetflixDataBase))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210609110152_202106091201")]
+    partial class _202106091201
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("FilmeGenero", b =>
-                {
-                    b.Property<int>("ListaDeFilmesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ListasDeGenerosId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ListaDeFilmesId", "ListasDeGenerosId");
-
-                    b.HasIndex("ListasDeGenerosId");
-
-                    b.ToTable("FilmeGenero");
-                });
 
             modelBuilder.Entity("FilmeUtilizador", b =>
                 {
@@ -308,11 +295,16 @@ namespace NotNetflix.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("FilmeFK")
+                        .HasColumnType("int");
+
                     b.Property<string>("Genre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FilmeFK");
 
                     b.ToTable("Genero");
                 });
@@ -384,21 +376,6 @@ namespace NotNetflix.Data.Migrations
                     b.HasIndex("UtilizadorFK");
 
                     b.ToTable("UtilizadorFilme");
-                });
-
-            modelBuilder.Entity("FilmeGenero", b =>
-                {
-                    b.HasOne("NotNetflix.Models.Filme", null)
-                        .WithMany()
-                        .HasForeignKey("ListaDeFilmesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NotNetflix.Models.Genero", null)
-                        .WithMany()
-                        .HasForeignKey("ListasDeGenerosId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("FilmeUtilizador", b =>
@@ -478,6 +455,17 @@ namespace NotNetflix.Data.Migrations
                     b.Navigation("Movie");
                 });
 
+            modelBuilder.Entity("NotNetflix.Models.Genero", b =>
+                {
+                    b.HasOne("NotNetflix.Models.Filme", "Movie")
+                        .WithMany("ListasDeGeneros")
+                        .HasForeignKey("FilmeFK")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+                });
+
             modelBuilder.Entity("NotNetflix.Models.GeneroFilme", b =>
                 {
                     b.HasOne("NotNetflix.Models.Filme", "Movie")
@@ -519,6 +507,8 @@ namespace NotNetflix.Data.Migrations
             modelBuilder.Entity("NotNetflix.Models.Filme", b =>
                 {
                     b.Navigation("ListasDeFotografias");
+
+                    b.Navigation("ListasDeGeneros");
                 });
 #pragma warning restore 612, 618
         }

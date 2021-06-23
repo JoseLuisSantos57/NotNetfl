@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NotNetflix.Data;
 using NotNetflix.Models;
-
+//##############################################################################################################################
+//Adicionar variáveis de sessão, adicionar objeto de vizualização nos details
+//##############################################################################################################################
 namespace NotNetflix.Controllers
 {
     public class FilmesController : Controller
@@ -33,7 +35,22 @@ namespace NotNetflix.Controllers
         // GET: Filmes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Filme.ToListAsync());
+            //pretendemos vizualizar os dados todos de cada  filme o que é semelhante a executar a subconsulta
+            //Select * from filmes, fotografias where filmes.id=fotografias.filmeFK
+
+            var lista_de_fotos = await _context.Filme.Include(f => f.ListasDeFotografias)
+                                                                    .OrderByDescending(f => f.Data)
+                                                                    .ToListAsync();
+
+            //é possível utilizar uma viewbag(transporte do controller para a view)
+            //ViewBag.Fotografias = lista_de_fotos;
+
+           /* var listafotos = new ListarFotosViewModel
+            {
+                ListaFotos = lista_de_fotos
+            };*/
+
+            return View(lista_de_fotos);
         }
 
         // GET: Filmes/Details/5
@@ -46,7 +63,12 @@ namespace NotNetflix.Controllers
 
             var filme = await _context.Filme
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (filme == null)
+            
+            /*var teste = await _context.GeneroFilme
+                .FirstOrDefault(m.)
+            */
+                
+                if (filme == null)
             {
                 return NotFound();
             }
@@ -128,27 +150,24 @@ namespace NotNetflix.Controllers
 
 
 
-
-
-
-
             //26/5/2021-modelstate não é válido sabe-se lá porquê
             //02/06/2021- modelstate já é válido
 
+            //o model state não era válido porque o path recebido pelo model era nula pois esta é criada no controller
             if (ModelState.IsValid)
             {
-                //try
-                //{
+                try
+                {
                     _context.Add(filme);
                     await _context.SaveChangesAsync();
                     using var stream = new FileStream(nomeFilme, FileMode.Create);
                     await filmefile.CopyToAsync(stream);
                     return RedirectToAction(nameof(Index));
-               // }
-               /* catch(Exception o)
+                }
+                catch(Exception o)
                 {
-
-                }*/
+                    ModelState.AddModelError("", "Ocorreu um erro com a introdução dos dados do Filme.");
+                }
             }
             return View(filme);
         }
