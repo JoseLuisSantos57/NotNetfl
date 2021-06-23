@@ -11,8 +11,12 @@ namespace NotNetflix.Models
         public Filme(){
             ListasDeUtilizadores = new HashSet<Utilizador>();
             ListasDeGeneros = new HashSet<Genero>();
-            ListasDeFotografias = new HashSet<Fotografias>();
+            ListasDeFotografias = new HashSet<Fotografia>();
         }
+
+        //############################################
+        //Adicionar expressões regulares
+        //############################################
 
     /// <summary>
     /// Identificador de filme
@@ -28,7 +32,7 @@ namespace NotNetflix.Models
     /// <summary>
     /// Titulo do filme
     /// </summary>
-    
+    [Required]
     [StringLength(50)]
     public string Titulo { get; set; }
 
@@ -62,6 +66,6 @@ namespace NotNetflix.Models
 
     public ICollection<Genero> ListasDeGeneros { get; set; }
 
-    public ICollection<Fotografias> ListasDeFotografias { get; set; }
+    public ICollection<Fotografia> ListasDeFotografias { get; set; }
     }
 }

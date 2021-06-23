@@ -37,20 +37,13 @@ namespace NotNetflix.Controllers
         // GET: Fotografias
         public async Task<IActionResult> Index()
         {
-            /*criação de uma variável que vai conter um conjunto de dados 
-             f => f.Movie  <---- expressão 'lambda'
-         *  ^ ^  ^
-         *  | |  |
-         *  | |  representa cada um dos registos individuais da tabela das Fotografias
-         *  | |  e associa a cada fotografia o seu respetivo filme
-         *  | |  equivalente à parte WHERE do comando SQL
-         *  | |
-         *  | um símbolo que separa os ramos da expressão
-         *  |
-         *  representa todos registos das fotografias
-             
-             
-             */
+            /* o comando seguinte é equivalente
+          * SELECT *
+          * FROM Fotografia f, Caes c
+          * WHERE f.caoFK = c.id
+          */
+
+
             var notNetflixDataBase = _context.Fotografia.Include(f => f.Movie);
             //invoca a view, entragando-lhe a lista de registos
             return View(await notNetflixDataBase.ToListAsync());
@@ -92,7 +85,7 @@ namespace NotNetflix.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FilmeFK")] Fotografias foto, IFormFile fotofilme)
+        public async Task<IActionResult> Create([Bind("FilmeFK")] Fotografia foto, IFormFile fotofilme)
         {
             //avaliar se o gestor escolheu um filme para associar à fotografia
             if (foto.FilmeFK < 0)
@@ -191,12 +184,28 @@ namespace NotNetflix.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Path,FilmeFK")] Fotografias fotografia)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Path,FilmeFK")] Fotografia fotografia)
         {
             if (id != fotografia.Id)
             {
                 return NotFound();
             }
+
+            //Recuperar o id do objeto enviado para o browser
+            var numIdFotografia = HttpContext.Session.GetInt32("NumFotografiaEmEdicao");
+
+            //E compará-lo com o ID recebido
+            // Se forem iguais continuamos
+            // Se forem diferentes não realizamos a alteração
+
+            if (numIdFotografia == null || numIdFotografia != id)
+            {
+                //se entrei aqui houve problemas
+
+                //Redirecionamos para a página inicial
+                return RedirectToAction("Index");
+            }
+
 
             if (ModelState.IsValid)
             {
