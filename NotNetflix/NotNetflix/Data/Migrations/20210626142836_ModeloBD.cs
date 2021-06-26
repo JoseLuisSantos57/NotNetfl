@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace NotNetflix.Data.Migrations
 {
-    public partial class _202105261020 : Migration
+    public partial class ModeloBD : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,9 +13,9 @@ namespace NotNetflix.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Path = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Path = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Titulo = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descricao = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Data = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Duracao = table.Column<int>(type: "int", nullable: false),
                     Rating = table.Column<double>(type: "float", nullable: false)
@@ -26,6 +26,19 @@ namespace NotNetflix.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Genero",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Genre = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Genero", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Utilizador",
                 columns: table => new
                 {
@@ -33,7 +46,8 @@ namespace NotNetflix.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nome = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    N_telemovel = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true)
+                    N_telemovel = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
+                    UserNameId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -46,7 +60,7 @@ namespace NotNetflix.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Path = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Path = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FilmeFK = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -61,23 +75,27 @@ namespace NotNetflix.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Genero",
+                name: "FilmeGenero",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Genre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FilmeId = table.Column<int>(type: "int", nullable: true)
+                    ListaDeFilmesId = table.Column<int>(type: "int", nullable: false),
+                    ListasDeGenerosId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Genero", x => x.Id);
+                    table.PrimaryKey("PK_FilmeGenero", x => new { x.ListaDeFilmesId, x.ListasDeGenerosId });
                     table.ForeignKey(
-                        name: "FK_Genero_Filme_FilmeId",
-                        column: x => x.FilmeId,
+                        name: "FK_FilmeGenero_Filme_ListaDeFilmesId",
+                        column: x => x.ListaDeFilmesId,
                         principalTable: "Filme",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FilmeGenero_Genero_ListasDeGenerosId",
+                        column: x => x.ListasDeGenerosId,
+                        principalTable: "Genero",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -130,31 +148,10 @@ namespace NotNetflix.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "GeneroFilme",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FilmeFK = table.Column<int>(type: "int", nullable: false),
-                    GeneroFK = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GeneroFilme", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_GeneroFilme_Filme_FilmeFK",
-                        column: x => x.FilmeFK,
-                        principalTable: "Filme",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GeneroFilme_Genero_GeneroFK",
-                        column: x => x.GeneroFK,
-                        principalTable: "Genero",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_FilmeGenero_ListasDeGenerosId",
+                table: "FilmeGenero",
+                column: "ListasDeGenerosId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FilmeUtilizador_ListasDeUtilizadoresId",
@@ -165,21 +162,6 @@ namespace NotNetflix.Data.Migrations
                 name: "IX_Fotografia_FilmeFK",
                 table: "Fotografia",
                 column: "FilmeFK");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Genero_FilmeId",
-                table: "Genero",
-                column: "FilmeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GeneroFilme_FilmeFK",
-                table: "GeneroFilme",
-                column: "FilmeFK");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GeneroFilme_GeneroFK",
-                table: "GeneroFilme",
-                column: "GeneroFK");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UtilizadorFilme_FilmeFK",
@@ -195,13 +177,13 @@ namespace NotNetflix.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "FilmeGenero");
+
+            migrationBuilder.DropTable(
                 name: "FilmeUtilizador");
 
             migrationBuilder.DropTable(
                 name: "Fotografia");
-
-            migrationBuilder.DropTable(
-                name: "GeneroFilme");
 
             migrationBuilder.DropTable(
                 name: "UtilizadorFilme");
@@ -210,10 +192,10 @@ namespace NotNetflix.Data.Migrations
                 name: "Genero");
 
             migrationBuilder.DropTable(
-                name: "Utilizador");
+                name: "Filme");
 
             migrationBuilder.DropTable(
-                name: "Filme");
+                name: "Utilizador");
         }
     }
 }
