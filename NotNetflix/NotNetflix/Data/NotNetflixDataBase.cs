@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NotNetflix.Models;
 using System;
@@ -7,7 +8,21 @@ using System.Text;
 
 namespace NotNetflix.Data
 {
-    public class NotNetflixDataBase : IdentityDbContext
+    public class ApplicationUser : IdentityUser
+    {
+
+        /// <summary>
+        /// recolhe a data de registo de um utilizador
+        /// </summary>
+        public DateTime DataRegisto { get; set; }
+
+        // /// <summary>
+        // /// se fizerem isto, estão a adicionar todos os atributos do 'Cliente'
+        // /// à tabela de autenticação
+        // /// </summary>
+        // public Clientes Cliente { get; set; }
+    }
+    public class NotNetflixDataBase : IdentityDbContext<ApplicationUser>
     {
         //construtor da classe NotNetflixDataBase
         //indicar onde está a BD à qual as tabelas estão associadas
@@ -23,7 +38,7 @@ namespace NotNetflix.Data
                 )*/
 
             modelbuilder.Entity<Genero>().HasData(
-                new Genero { Id = 1, Genre = "Ação" },
+                new Genero { Id = 1, Genre = "Ação"},
                 new Genero { Id = 2, Genre = "Aventura" },
                 new Genero { Id = 3, Genre = "Comédia" },
                 new Genero { Id = 4, Genre = "Documentário" },
