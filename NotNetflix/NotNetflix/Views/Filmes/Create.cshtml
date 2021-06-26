@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Create";
+
 }
 
 <h1>Create</h1>
@@ -29,11 +30,11 @@
                 <span asp-validation-for="Titulo" class="text-danger"></span>
             </div>
             @*Descrição do filme*@
-            <div class="form-group">
-                <label asp-for="Descricao" class="control-label"></label>
-                <input asp-for="Descricao" class="form-control" />
-                <span asp-validation-for="Descricao" class="text-danger"></span>
-            </div>
+        <div class="form-group">
+            <label asp-for="Descricao" class="control-label"></label>
+            <textarea asp-for="Descricao" rows="6" cols="50"></textarea>
+            <span asp-validation-for="Descricao" class="text-danger"></span>
+        </div>
             @*Data de lançamento*@
             <div class="form-group">
                 <label asp-for="Data" class="control-label"></label>
@@ -52,12 +53,13 @@
                 <input asp-for="Rating" class="form-control" />
                 <span asp-validation-for="Rating" class="text-danger"></span>
             </div>
-            @*Referência para o género do filme*@
-            @*<div class="form-group">
-                <label asp-for="Genero" class="control-label"></label>
-                <input asp-for="Genero" class="form-control" />
-                <span asp-validation-for="Rating" class="text-danger"></span>
-            </div>*@
+           
+            @foreach(var genero in ViewBag.Generos)
+            {
+                <input type="checkbox" name="listaGenerosEscolhidos" value="@genero.Id"/> @genero.Genre<br/><br/>
+
+            }
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

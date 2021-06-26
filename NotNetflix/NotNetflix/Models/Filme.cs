@@ -56,8 +56,9 @@ namespace NotNetflix.Models
     /// <summary>
     /// Classificação do filme (conforme o imbd) de 0 a 10
     /// </summary>
-    
-    public Double Rating { get; set; }
+   
+    [RegularExpression("[1-9]|(10)")]
+    public double Rating { get; set; }
 
 
     //public ICollection<Filme> ListasDeFilmes { get; set; }

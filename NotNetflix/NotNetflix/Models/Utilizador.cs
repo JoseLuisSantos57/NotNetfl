@@ -43,5 +43,14 @@ namespace NotNetflix.Models
         public string N_telemovel { get; set; }
 
         public ICollection<Filme> ListasDeFilmes { get; set; }
+        //###########################################################################
+        // FK para a tabela de Autenticação
+        //###########################################################################
+        /// <summary>
+        /// Chave de ligação entre a Autenticação e os Criadores 
+        /// Consegue-se, por exemplo, filtrar os dados dos criadores qd se autenticam
+        /// </summary>
+        public string UserNameId { get; set; }
+        //#####################################################################
     }
 }
