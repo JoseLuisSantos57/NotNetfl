@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,13 +12,15 @@ using NotNetflix.Models;
 
 namespace NotNetflix.Controllers
 {
+    [Authorize]
     public class UtilizadoresController : Controller
     {
         private readonly NotNetflixDataBase _context;
-
-        public UtilizadoresController(NotNetflixDataBase context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public UtilizadoresController(NotNetflixDataBase context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Utilizadores
