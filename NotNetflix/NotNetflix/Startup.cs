@@ -40,16 +40,19 @@ namespace NotNetflix
                 options.Cookie.IsEssential = true;
             });
             
-            services.AddDatabaseDeveloperPageExceptionFilter();
-
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<NotNetflixDataBase>();
-            services.AddControllersWithViews();
 
 
             //Configurar o acesso à base de dados
             services.AddDbContext<NotNetflixDataBase>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("myConnectionString")));
+
+           services.AddDatabaseDeveloperPageExceptionFilter();
+
+            services.AddDefaultIdentity<ApplicationUser>(options =>
+                        options.SignIn.RequireConfirmedAccount = true)
+                            .AddRoles<IdentityRole>() // ativa a utilização de Roles
+                            .AddEntityFrameworkStores<NotNetflixDataBase>();
+            services.AddControllersWithViews();
 
         }
 

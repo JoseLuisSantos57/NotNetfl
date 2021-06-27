@@ -28,7 +28,7 @@ namespace NotNetflix.Models
         /// <summary>
         /// Email do utilizador
         /// </summary>
-        [Required (ErrorMessage = "É obrigatório um email")]
+        
         [RegularExpression("((((aluno)|(es((tt)|(ta)|(gt))))[0-9]{4,5})|([a-z]+(.[a-z]+)*))@ipt.pt",
                            ErrorMessage = "Só são aceites emails do IPT.")]
         public string Email { get; set; }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NotNetflix.Data;
 
 namespace NotNetflix.Data.Migrations
 {
     [DbContext(typeof(NotNetflixDataBase))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210627114230_UserRoles")]
+    partial class UserRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,14 +81,14 @@ namespace NotNetflix.Data.Migrations
                         new
                         {
                             Id = "c",
-                            ConcurrencyStamp = "87113622-7435-494f-9ca5-31d3e42c76cc",
+                            ConcurrencyStamp = "bdabfb0a-2098-45dc-8ac8-22ddbbd5914f",
                             Name = "Utilizador",
                             NormalizedName = "CRIADOR"
                         },
                         new
                         {
                             Id = "g",
-                            ConcurrencyStamp = "e3ff6b0a-820f-420c-9bda-5f2d25e49056",
+                            ConcurrencyStamp = "3ba0fbaf-fb94-4982-b9ba-657807107693",
                             Name = "Gestor",
                             NormalizedName = "GESTOR"
                         });

@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <None Include="Areas\Identity\Pages\Account\ConfirmEmail.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Login.cshtml" />
     <None Include="Areas\Identity\Pages\Account\Register.cshtml" />
     <None Include="Areas\Identity\Pages\Account\RegisterConfirmation.cshtml" />
     <None Include="Areas\Identity\Pages\Account\_ViewImports.cshtml" />
@@ -41,6 +40,8 @@
     <None Include="Properties\launchSettings.json" />
     <None Include="Properties\serviceDependencies.json" />
     <None Include="Properties\serviceDependencies.local.json" />
+    <None Include="wwwroot\js\jquery-1.4.2.min.js" />
+    <None Include="wwwroot\js\jquery-func.js" />
   </ItemGroup>
 
 </Project>

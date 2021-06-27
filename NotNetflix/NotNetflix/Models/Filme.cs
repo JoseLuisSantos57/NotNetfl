@@ -61,7 +61,7 @@ namespace NotNetflix.Models
     public double Rating { get; set; }
 
 
-    //public ICollection<Filme> ListasDeFilmes { get; set; }
+
 
     public ICollection<Utilizador> ListasDeUtilizadores { get; set; }
 

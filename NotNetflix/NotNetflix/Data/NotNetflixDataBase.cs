@@ -31,11 +31,10 @@ namespace NotNetflix.Data
         {
             base.OnModelCreating(modelbuilder);
 
-            //inserir dados da base de dados aqui
-            /*modelbuilder.Entity<Filme>().HasData(
-                new Filme { Id = 1, }
-
-                )*/
+            modelbuilder.Entity<IdentityRole>().HasData(
+             new IdentityRole { Id = "c", Name = "Utilizador", NormalizedName = "CRIADOR" },
+             new IdentityRole { Id = "g", Name = "Gestor", NormalizedName = "GESTOR" }
+             );
 
             modelbuilder.Entity<Genero>().HasData(
                 new Genero { Id = 1, Genre = "Ação"},

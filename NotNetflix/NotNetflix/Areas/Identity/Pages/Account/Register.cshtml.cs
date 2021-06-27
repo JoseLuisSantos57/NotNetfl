@@ -20,7 +20,7 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
    [AllowAnonymous]
    public class RegisterModel : PageModel {
 
-        private readonly SignInManager<ApplicationUser> _signInManager;
+      private readonly SignInManager<ApplicationUser> _signInManager;
       private readonly UserManager<ApplicationUser> _userManager;
       private readonly ILogger<RegisterModel> _logger;
       private readonly IEmailSender _emailSender;
@@ -76,19 +76,19 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
          public string Email { get; set; }
 
          [Required]
-         [StringLength(100, ErrorMessage = "A sua password deve ter um mínimo de 6 caracteres.", MinimumLength = 6)]
-         [DataType(DataType.Password)]
+         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        // [DataType(DataType.Password)]
          [Display(Name = "Password")]
          public string Password { get; set; }
 
-         [DataType(DataType.Password)]
+         //[DataType(DataType.Password)]
          [Display(Name = "Confirm password")]
          [Compare("Password", ErrorMessage = "A password e a sua confirmação não correspondem.")]
          public string ConfirmPassword { get; set; }
 
          /// <summary>
          /// Ao anexar um objeto deste tipo ao 'InpuModel' estamos a 
-         /// permitir a recolha dos dados do Cliente
+         /// permitir a recolha dos dados do Criador
          /// </summary>
          public Utilizador User { get; set; }
       }
@@ -108,7 +108,7 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
       /// <summary>
       /// método a ser executado pela página, quando o HTTP é invocado em POST
       ///    - criar um novo Utilizador
-      ///    - registar os dados pessoais do cliente
+      ///    - registar os dados pessoais do criador
       /// </summary>
       /// <param name="returnUrl">link para redirecionar o utilizador, se fornecido</param>
       /// <returns></returns>
@@ -121,7 +121,7 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
          // se o 'returnUrl' for null, é-lhe atribuído um URL
          // se não for Null, nada é feito
          returnUrl ??= Url.Content("~/");
-
+           
 
          // ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
@@ -133,9 +133,9 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
             var user = new ApplicationUser {
                UserName = Input.Email, // username
                Email = Input.Email,    // email do utilizador
-               EmailConfirmed = false, // o email não está formalmente confirmado
-               LockoutEnabled = true,  // o utilizador pode ser bloqueado
-               LockoutEnd = new DateTime(DateTime.Now.Year + 10, 1, 1),  // data em que termina o bloqueio,
+               EmailConfirmed = true, // o email não está formalmente confirmado
+               LockoutEnabled = false,  // o utilizador pode ser bloqueado
+               LockoutEnd = new DateTime(DateTime.Now.Day + 1, 1, 1),  // data em que termina o bloqueio,
                                                                          // se não for anulado antes
                DataRegisto = DateTime.Now // data do registo
             };
@@ -147,25 +147,47 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
             if (result.Succeeded) {
                _logger.LogInformation("User created a new account with password.");
 
-               //*************************************************************
-               // Vamos proceder à operação de guardar os dados do Cliente
-               //*************************************************************
-               // preparar os dados do Cliente para serem adicionados à BD
-               Input.User.Email = Input.Email; // atribuir ao objeto 'cliente' o email fornecido pelo utilizador,
-                                                  // a quando da escreita dos dados na interface
-                                                  // exatamente a mesma tarefa feita na linha 128
+                    //Para a criação do gestor vai verificar se o email é o seguinte
+                    //if (Input.User.Email.CompareTo("gestor@gmail.com") == 0) { 
+                            await _userManager.AddToRoleAsync(user, "Gestor");
+                        Input.User.Email = Input.Email; // atribuir ao objeto 'criador' o email fornecido pelo utilizador,
+                                                        // a quando da escreita dos dados na interface
+                                                        // exatamente a mesma tarefa feita na linha 128
 
-               Input.User.Nome = user.Id;
+                        Input.User.UserNameId = user.Id;  // adicionar o ID do utilizador,
+                                                          // para formar uma 'ponte' (foreign key) entre
+                                                          // os dados da autenticação e os dados do 'negócio'
+                    //}
+                    /*else
+                    {
 
+                        await _userManager.AddToRoleAsync(user, "Utilizador");
+                        //await UserManager.AddToRoleAsync(user.Id, "role1");
+                        //await UserManager.AddToRoleAsync(user.Id, "role2");
+                        //*************************************************************
+                        // Vamos proceder à operação de guardar os dados do Criador
+                        //*************************************************************
+                        // preparar os dados do Criador para serem adicionados à BD
+                        Input.User.Email = Input.Email; // atribuir ao objeto 'criador' o email fornecido pelo utilizador,
+                                                        // a quando da escreita dos dados na interface
+                                                        // exatamente a mesma tarefa feita na linha 128
+
+                        Input.User.UserNameId = user.Id;  // adicionar o ID do utilizador,
+                                                          // para formar uma 'ponte' (foreign key) entre
+                                                          // os dados da autenticação e os dados do 'negócio'
+
+
+                    }
+                    */
                // estamos em condições de guardar os dados na BD
                try {
-                  _context.Add(Input.User); // adicionar o Cliente
+                  _context.Add(Input.User); // adicionar o Criador
                   await _context.SaveChangesAsync(); // 'commit' da adição
                   // Enviar para o utilizador para a página de confirmação da criaçao de Registo
-                  return RedirectToPage("RegisterConfirmation");
+                  return RedirectToPage("RegisterConfirmantion");
                }
                catch (Exception) {
-                  // houve um erro na criação dos dados do Cliente
+                  // houve um erro na criação dos dados do Criador
                   // Mas, o USER já foi criado na BD
                   // vou efetuar o Roolback da ação
                   await _userManager.DeleteAsync(user);
