@@ -30,51 +30,63 @@
             <th>
                 @Html.DisplayNameFor(model => model.Rating)
             </th>
+            <th>
+                @Html.DisplayNameFor(foto => foto.ListasDeFotografias)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ListasDeGeneros)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Path)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Titulo)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Descricao)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Data)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Duracao)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Rating)
-                </td>
-                <td>
-                    @ViewBag.Fotografia
-                </td>
-                 <td>
-
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-            @*div class="movie">
-                <div class="movie-image"> <span class="play"><span class="name">m</span></span> <a href="#"><img src="css/images/movie2.jpg" alt="" /></a> </div>
-                <div class="rating">
-                    <p>RATING</p>
-                    <div class="stars">
-                        <div class="stars-in"> </div>
-                    </div>
+        <tr>
+            <td>
+                <video width="320" height="240" controls>
+                    <source src="~/filmes/@Html.DisplayFor(modelItem => item.Path)" type="video/webm">
                    
-                </div>
-            </div>*@
+                    Your browser does not support the video tag. <!-- Text to be shown incase browser doesnt support html5 -->
+                </video>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Titulo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descricao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Data)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duracao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rating)
+            </td>
+            <td>
+                @foreach (var foto in item.ListasDeFotografias)
+                {
+                    <img src="~/fotos/@foto.Path" alt="foto do filme" height="100" width="100" />
+                    
+                }
+            </td>
+            <td>
+                @foreach (var gen in item.ListasDeGeneros)
+                {
+                    <p>@gen.Genre &nbsp;</p>
+                }
+            </td>
+
+            <td>
+
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+
+        </tr>
         }
     </tbody>
 </table>

@@ -4,9 +4,9 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Edit Movie</h1>
 
-<h4>Filme</h4>
+
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,9 +14,16 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
+                <p>Ficheiro do filme atual</p>
+                <video width="320" height="240" controls>
+                    <source src="~/filmes/@Html.DisplayFor(modelItem => modelItem.Path)" type="video/webm">
+
+                    Your browser does not support the video tag. <!-- Text to be shown incase browser doesnt support html5 -->
+                </video>
                 <label asp-for="Path" class="control-label"></label>
                 <input asp-for="Path" class="form-control" />
                 <span asp-validation-for="Path" class="text-danger"></span>
+
             </div>
             <div class="form-group">
                 <label asp-for="Titulo" class="control-label"></label>
@@ -42,6 +49,26 @@
                 <label asp-for="Rating" class="control-label"></label>
                 <input asp-for="Rating" class="form-control" />
                 <span asp-validation-for="Rating" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                @foreach (var gen in Model.ListasDeGeneros)
+                {
+                    <p>@gen.Genre &nbsp;</p>
+                }
+            </div>
+            <div class="form-group">
+                @foreach (var fotos in Model.ListasDeFotografias)
+                {
+                    <label class="control-label">Fotografias</label>
+                    <input asp-for="@fotos.Path" class="form-control"/>
+                    <input type="file" name="fotografia" accept=".jpg,.jpeg,.png" style="color:blue;" />
+                }
+            </div>
+            <div class="form-group">
+                @foreach (var gen in Model.ListasDeGeneros)
+                {
+                    <input  asp-for="ListasDeGeneros"  name="listaGenerosEditados" class="form-control" />
+                }
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

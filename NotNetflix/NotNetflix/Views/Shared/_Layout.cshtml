@@ -1,53 +1,145 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
-<!DOCTYPE html>
-<html lang="en">
+@*<!DOCTYPE html>
+        <title>@ViewData["Title"] - !Netflix</title>
+        <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>@ViewData["Title"] - NotNeftlix</title>
+            <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+            <link rel="stylesheet" href="~/css/site.css" />
+        </head>
+        <header >
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="container">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">!NETFLIX</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <html lang="en">
+
+        <body>
+
+
+            <div id="mySidenav" class="sidenav">
+                <a href="#">About</a><br />
+                <a href="#">Services</a><br />
+                <a href="#">Clients</a><br />
+                <a href="#">Contact</a><br />
+            </div>
+
+            <!-- Use any element to open the sidenav -->
+
+
+            <!-- Add all page content inside this div if you want the side nav to push page content to the right (not used if you only want the sidenav to sit on top of the page -->
+            <div id="main">
+
+            </div>
+            <div class="container">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+
+            <footer class="border-top footer text-muted">
+                <div class="container">
+                    &copy; 2021 - NotNetflix - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                </div>
+            </footer>
+            <link href="~/css/site.css" rel="stylesheet" />
+            <script src="~/lib/jquery/dist/jquery.min.js"></script>
+            <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="~/js/site.js" asp-append-version="true"></script>
+            @await RenderSectionAsync("Scripts", required: false)
+        </body>
+    </html>*@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - NotNetflix</title>
-    <link href="~/css/style.css" rel="stylesheet" />
-    <link href="~/css/ie6.css" rel="stylesheet" />
-    
+    <title>MovieHunter</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  
+
+    <link href="~/css/folha_de_estilos.css" rel="stylesheet" media="all"/>
+    <script src="~/js/jquery-func.js"></script>
+    <script src="~/js/jquery_1.4.2.js"></script>
+    <!--[if IE 6]><link rel="stylesheet" href="css/ie6.css" type="text/css" media="all" /><![endif]-->
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">NotNetflix</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
+    <!-- START PAGE SOURCE -->
+    <div id="shell">
+        <div id="header">
+            <h1 id="logo"><a href="#">!Netflix</a></h1>
+            <div class="social">
+                <span>FOLLOW US ON:</span>
+                <ul>
+                    <li><a class="twitter" href="#">twitter</a></li>
+                    <li><a class="facebook" href="#">facebook</a></li>
+                    <li><a class="vimeo" href="#">vimeo</a></li>
+                    <li><a class="rss" href="#">rss</a></li>
+                </ul>
+            </div>
+            <div id="navigation">
+                <ul>
+                    <li><a class="active" href="#">HOME</a></li>
+                    <li><a href="#">NEWS</a></li>
+                    <li><a href="#">IN THEATERS</a></li>
+                    <li><a href="#">COMING SOON</a></li>
+                    <li><a href="#">CONTACT</a></li>
+                    <li><a href="#">ADVERTISE</a></li>
+                </ul>
+            </div>
+            <div id="sub-navigation">
+                <ul>
+                    <li><a href="#">SHOW ALL</a></li>
+                    <li><a href="#">LATEST TRAILERS</a></li>
+                    <li><a href="#">TOP RATED</a></li>
+                    <li><a href="#">MOST COMMENTED</a></li>
+                </ul>
+                <div id="search">
+                    <form action="#" method="get" accept-charset="utf-8">
+                        <label for="search-field">SEARCH</label>
+                        <input type="text" name="search field" value="Enter search here" id="search-field" class="blink search-field" />
+                        <input type="submit" value="GO!" class="search-button" />
+                    </form>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2021 - NotNetflix - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+        <div id="content">
+            
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+                   
+                </div>
+            </div>
+            
+            
+            <div class="cl">&nbsp;</div>
+        </div>
+        <div id="footer">
+            <p class="lf">Copyright &copy; 2010 <a href="#">SiteName</a> - All Rights Reserved</p>
+            <p class="rf">Design by <a href="http://chocotemplates.com/">ChocoTemplates.com</a></p>
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+    <!-- END PAGE SOURCE -->
 </body>
 </html>

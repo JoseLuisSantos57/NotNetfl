@@ -29,7 +29,7 @@ namespace NotNetflix.Controllers
         /// Atributo que irá receber todos os dados referentes à pessoa que se autenticou no sistema
         /// </summary>
         private readonly UserManager<ApplicationUser> _userManager;
-
+        //private ListarFotosViewModel<List>
         public FilmesController(NotNetflixDataBase context, IWebHostEnvironment caminho, UserManager<ApplicationUser> userManager)
         {
             _context = context;
@@ -44,15 +44,18 @@ namespace NotNetflix.Controllers
             //pretendemos vizualizar os dados todos de cada  filme o que é semelhante a executar a subconsulta
             //Select * from filmes, fotografias where filmes.id=fotografias.filmeFK
 
-            var lista_de_fotos = await _context.Filme.Include(f => f.ListasDeFotografias)
-                                                                    .OrderByDescending(f => f.Data)
-                                                                    .ToListAsync();
-            ViewBag.Fotografia = await _context.Filme.Include(f => f.ListasDeFotografias)
-                                                                    .OrderByDescending(f => f.Path)
-                                                                    .ToListAsync();
+            /*
+             SELECT fotografia
+            FROM fotografia, filme
+            WHERE fotografia.FilmeFk = filme.listadefotografias
+             
+             */
+            /* var lista_de_fotos = ;
+             var fotografias = await _context.Fotografia.Where(f => );
 
-            
-            
+             */
+
+            var listaFilmes = await  _context.Filme.Include(f => f.ListasDeFotografias).Include(f => f.ListasDeGeneros).ToListAsync();
             //é possível utilizar uma viewbag(transporte do controller para a view)
             //ViewBag.Fotografias = lista_de_fotos;
 
@@ -61,7 +64,7 @@ namespace NotNetflix.Controllers
                  ListaFotos = lista_de_fotos
              };*/
 
-            return View(lista_de_fotos);
+            return View(listaFilmes);
         }
 
         // GET: Filmes/Details/5
@@ -90,8 +93,9 @@ namespace NotNetflix.Controllers
         {
 
             ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
-            
-            return View();
+            var listaFilmes = await _context.Filme.Include(f => f.ListasDeFotografias).Include(f => f.ListasDeGeneros).ToListAsync();
+
+            return View(listaFilmes);
         }
 
         // POST: Filmes/Create
@@ -100,17 +104,23 @@ namespace NotNetflix.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Path,Titulo,Descricao,Data,Duracao,Rating")] Filme filme, IFormFile filmefile, int[] listaGenerosEscolhidos, IFormFile fotografia)
-        {       DateTime data = filme.Data;
+        {
+            //var auxiliar
+            bool correto = true;
                 
-                if (DateTime.Compare(data, DateTime.Now) > 0)
+            if (ModelState.IsValid)
+                {   
+
+                if (DateTime.Compare(filme.Data, DateTime.Now) > 0)
                 {
-                    ModelState.AddModelError("", "A data introduzida não é válida");
+                    ModelState.AddModelError("", "A data introduzida não é válida, porque é posterior à data atual");
+                    correto = false;
                 }
 
 
-           
-            if (ModelState.IsValid)
-            {   
+
+                var modelo = new Fotografia();
+                
                 /* processar o ficheiro
                  *   - existe ficheiro?
                  *     - se não existe, o q fazer?  => gerar uma msg erro, e devolver controlo à View
@@ -132,9 +142,8 @@ namespace NotNetflix.Controllers
                     //apresentar mensagem a pedir o ficheiro
                     ModelState.AddModelError("", "Adicione por favor o ficheiro do filme");
 
-                    //devolve o controlo à view
-                    ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
-                    return View(filme);
+                    correto = false;
+                    
                 }
                 else //existe ficheiro
                 {
@@ -155,14 +164,14 @@ namespace NotNetflix.Controllers
                         filme.Path = nomeFilme;
 
                         string localizacaoFicheiro = _caminho.WebRootPath;
-                        nomeFilme = Path.Combine(localizacaoFicheiro, "filme", nomeFilme);
+                        nomeFilme = Path.Combine(localizacaoFicheiro, "filmes", nomeFilme);
                     }
                     else
                     {
                         //ficheiro não é válido
                         //adicionar mensagem de erro
                         ModelState.AddModelError("", "O formato do ficheiro introduzido não é válido");
-
+                        correto = false;
 
                     }
                 }
@@ -172,7 +181,9 @@ namespace NotNetflix.Controllers
                 string nomefoto = " ";
                 if(fotografia == null)
                 {
-                    ModelState.AddModelError("", "Adicione um ficheiro válido");
+                    ModelState.AddModelError("", "Adicione um ficheiro válido de imagem");
+                    correto= false;
+               
                 }
                 else // existe ficheiro
                 {
@@ -187,15 +198,17 @@ namespace NotNetflix.Controllers
                         string extensao = Path.GetExtension(fotografia.FileName).ToLower();
 
                         nomefoto = nomefoto + extensao;
-
+                        
+                        modelo.Path = nomefoto;
                         string localizacaodoficheiro = _caminho.WebRootPath;
 
                         nomefoto = Path.Combine(localizacaodoficheiro, "fotos", nomefoto);
-
+                        
                     }
                     else
                     {
-                        ModelState.AddModelError("", "Ocorreu um erro");
+                        ModelState.AddModelError("", "O ficheiro fornecido não corresponde a uma imagem");
+                        correto = false;
                     }
                 }
 
@@ -209,30 +222,35 @@ namespace NotNetflix.Controllers
                     filme.ListasDeGeneros = (ICollection<Genero>)listaGeneros;
                 }
 
+
+                if (correto)
+                {
+                    try
+                    {
+
+                        _context.Add(filme);
+                        await _context.SaveChangesAsync();
+
+                        
+                        modelo.FilmeFK = filme.Id;
+                   
+                        _context.Add(modelo);
+                        await _context.SaveChangesAsync();
+                        using var play = new FileStream(nomefoto, FileMode.Create);
+                        using var stream = new FileStream(nomeFilme, FileMode.Create);
+                        await filmefile.CopyToAsync(stream);
+                        await fotografia.CopyToAsync(play);
+
+
+                        return RedirectToAction(nameof(Index));
+                    }
+                    catch (Exception o)
+                    {
+                        var erro = o.GetBaseException().ToString();
+                        ModelState.AddModelError("", erro);
+                    }
+                }
                 
-
-                try
-                {
-                    
-                    _context.Add(filme);
-                    await _context.SaveChangesAsync();
-
-                   var modelo = new Fotografia();
-                    modelo.Path = nomefoto;
-                    modelo.FilmeFK = filme.Id;
-                    _context.Add(modelo);
-                    using var play = new FileStream(nomefoto, FileMode.Create);
-                    using var stream = new FileStream(nomeFilme, FileMode.Create);
-                    await filmefile.CopyToAsync(stream);
-
-                    
-
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception o)
-                {
-                    ModelState.AddModelError("", "Ocorreu um erro com a introdução dos dados do Filme.");
-                }
             }
 
             ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
@@ -252,6 +270,11 @@ namespace NotNetflix.Controllers
             {
                 return NotFound();
             }
+
+
+            ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
+            ViewBag.Fotos = await _context.Filme.Include(f => f.ListasDeFotografias).ToListAsync();
+ 
             return View(filme);
 
 
@@ -262,8 +285,17 @@ namespace NotNetflix.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Path,Titulo,Descricao,Data,Duracao,Rating")] Filme filme)
+        public async Task<IActionResult> Edit(int id, [Bind("Path,Titulo,Descricao,Data,Duracao,Rating")] Filme filme, IFormFile filmefile, int[] listaGenerosEditados, IFormFile fotografia)
         {
+            /*Introduzir os dados novos do filme
+             * Receber o ficheiro do filme --> se for igual não altera
+             * Receber o ficheiro da foto --> se for igual não altera
+             * Receber os novos géneros --> se for igual não altera
+             * Tratar dos outros dados 
+             */
+
+
+            //se o filme não existir retorna not found
             if (id != filme.Id)
             {
                 return NotFound();
@@ -271,8 +303,11 @@ namespace NotNetflix.Controllers
 
             if (ModelState.IsValid)
             {
+                
+
                 try
                 {
+                   
                     _context.Update(filme);
                     await _context.SaveChangesAsync();
                 }

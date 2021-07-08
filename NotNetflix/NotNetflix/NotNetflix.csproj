@@ -40,8 +40,11 @@
     <None Include="Properties\launchSettings.json" />
     <None Include="Properties\serviceDependencies.json" />
     <None Include="Properties\serviceDependencies.local.json" />
-    <None Include="wwwroot\js\jquery-1.4.2.min.js" />
-    <None Include="wwwroot\js\jquery-func.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\filmes\" />
+    <Folder Include="wwwroot\fotos\" />
   </ItemGroup>
 
 </Project>
