@@ -93,9 +93,9 @@ namespace NotNetflix.Controllers
         {
 
             ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
-            var listaFilmes = await _context.Filme.Include(f => f.ListasDeFotografias).Include(f => f.ListasDeGeneros).ToListAsync();
+            //var listaFilmes = await _context.Filme.Include(f => f.ListasDeFotografias).Include(f => f.ListasDeGeneros).ToListAsync();
 
-            return View(listaFilmes);
+            return View();
         }
 
         // POST: Filmes/Create
@@ -103,7 +103,7 @@ namespace NotNetflix.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Path,Titulo,Descricao,Data,Duracao,Rating")] Filme filme, IFormFile filmefile, int[] listaGenerosEscolhidos, IFormFile fotografia)
+        public async Task<IActionResult> Create([Bind("Path,Titulo,Descricao,Data,Duracao,Rating")] Filme filme, IFormFile filmefile, int[] listaGenerosEscolhidos, List<IFormFile> fotografia)
         {
             //var auxiliar
             bool correto = true;
@@ -117,9 +117,17 @@ namespace NotNetflix.Controllers
                     correto = false;
                 }
 
+                if (listaGenerosEscolhidos.Count() != 0)
+                {
+                    // foram escolhidos géneros
+                    var listaGeneros = _context.Genero.Where(g => listaGenerosEscolhidos.Contains(g.Id)).ToList();
+                    // adicionar esta lista de géneros ao filme
+                    filme.ListasDeGeneros = (ICollection<Genero>)listaGeneros;
+                }
 
-
-                var modelo = new Fotografia();
+                TimeSpan t = TimeSpan.FromMinutes(filme.Duracao);
+                filme.Duracao = t.TotalHours;
+                
                 
                 /* processar o ficheiro
                  *   - existe ficheiro?
@@ -176,55 +184,21 @@ namespace NotNetflix.Controllers
                     }
                 }
 
-                //################################
+                
                 //adcionar fotografia
                 string nomefoto = " ";
-                if(fotografia == null)
-                {
-                    ModelState.AddModelError("", "Adicione um ficheiro válido de imagem");
-                    correto= false;
-               
-                }
-                else // existe ficheiro
-                {
-                    if(fotografia.ContentType == "image/jpg" || fotografia.ContentType == "image/jpeg"  || fotografia.ContentType == "image/png")
+                foreach (IFormFile photo in fotografia) {
+                    if (fotografia == null && (photo.ContentType != "image/jpg" || photo.ContentType != "image/jpeg" || photo.ContentType != "image/png"))
                     {
-                        //definir o nome do ficheiro
-                        Guid a;
-                        a = Guid.NewGuid();
-                        nomefoto = filme.Titulo + "_" + a.ToString();
-
-                        //determinar a expressão do nome do filme
-                        string extensao = Path.GetExtension(fotografia.FileName).ToLower();
-
-                        nomefoto = nomefoto + extensao;
-                        
-                        modelo.Path = nomefoto;
-                        string localizacaodoficheiro = _caminho.WebRootPath;
-
-                        nomefoto = Path.Combine(localizacaodoficheiro, "fotos", nomefoto);
-                        
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "O ficheiro fornecido não corresponde a uma imagem");
+                        ModelState.AddModelError("", "Adicione um ficheiro válido de imagem");
                         correto = false;
-                    }
+
+                    } 
                 }
-
-                //################################
-                // processar os géneros do Filme
-                if (listaGenerosEscolhidos.Count() != 0)
+                 if(correto)
                 {
-                    // foram escolhidos géneros
-                    var listaGeneros = _context.Genero.Where(g => listaGenerosEscolhidos.Contains(g.Id)).ToList();
-                    // adicionar esta lista de géneros ao filme
-                    filme.ListasDeGeneros = (ICollection<Genero>)listaGeneros;
-                }
+                    
 
-
-                if (correto)
-                {
                     try
                     {
 
@@ -232,24 +206,52 @@ namespace NotNetflix.Controllers
                         await _context.SaveChangesAsync();
 
                         
+                        
+                        using var stream = new FileStream(nomeFilme, FileMode.Create);
+                        await filmefile.CopyToAsync(stream);
+                  
+                        foreach (IFormFile photo in fotografia)
+                        {
+
+                            var modelo = new Fotografia();
+                            //definir o nome do ficheiro
+                            Guid a;
+                        a = Guid.NewGuid();
+                        nomefoto = filme.Titulo + "_" + a.ToString();
+
+                        //determinar a expressão do nome do filme
+                        string extensao = Path.GetExtension(photo.FileName).ToLower();
+
+                        nomefoto = nomefoto + extensao;
+                        
+                        modelo.Path = nomefoto;
+                        string localizacaodoficheiro = _caminho.WebRootPath;
+
+                        nomefoto = Path.Combine(localizacaodoficheiro, "fotos", nomefoto);
                         modelo.FilmeFK = filme.Id;
-                   
                         _context.Add(modelo);
                         await _context.SaveChangesAsync();
                         using var play = new FileStream(nomefoto, FileMode.Create);
-                        using var stream = new FileStream(nomeFilme, FileMode.Create);
-                        await filmefile.CopyToAsync(stream);
-                        await fotografia.CopyToAsync(play);
-
-
+                            await photo.CopyToAsync(play);
+                    }
                         return RedirectToAction(nameof(Index));
                     }
                     catch (Exception o)
                     {
                         var erro = o.GetBaseException().ToString();
                         ModelState.AddModelError("", erro);
+                        ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
+                        return View(filme);
                     }
+
+
+                    
                 }
+
+               
+                
+
+              
                 
             }
 
@@ -351,6 +353,7 @@ namespace NotNetflix.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var filme = await _context.Filme.FindAsync(id);
+
             _context.Filme.Remove(filme);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

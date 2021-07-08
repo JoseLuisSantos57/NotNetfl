@@ -33,13 +33,14 @@ namespace NotNetflix.Models
     /// Titulo do filme
     /// </summary>
     [Required]
-    [StringLength(50)]
+    [StringLength(50, ErrorMessage = "O {0} não pode ter mais de {1} carateres." )]
     public string Titulo { get; set; }
 
     /// <summary>
     /// Resumo do filme
     /// </summary>
-    
+    [StringLength(300, ErrorMessage = "O {0} não pode ter mais de {1} carateres.")]
+    [Display(Name = "Descrição do filme")]
     public string Descricao { get; set; }
 
     /// <summary>
@@ -50,17 +51,17 @@ namespace NotNetflix.Models
     /// <summary>
     /// Duração do filme
     /// </summary>
-    
-    public int Duracao { get; set; }
+    [Required(ErrorMessage = "A duração do filme é de preenchimento obrigatório")]
+    [RegularExpression("[0-9]{1,4}")]
+    [Display(Name = "Duração do filme em minutos")]
+    public double Duracao { get; set; }
 
     /// <summary>
     /// Classificação do filme (conforme o imbd) de 0 a 10
     /// </summary>
    
     [RegularExpression("[1-9]|(10)")]
-    public double Rating { get; set; }
-
-
+    public double Rating { get; set;}
 
 
     public ICollection<Utilizador> ListasDeUtilizadores { get; set; }

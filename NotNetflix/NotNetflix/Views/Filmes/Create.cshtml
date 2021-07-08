@@ -5,9 +5,8 @@
 
 }
 
-<h1>Create</h1>
+<h1>Introduzir um filme na plataforma</h1>
 
-<h4>Filme</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -20,17 +19,15 @@
                 @*https://en.wikipedia.org/wiki/WebM de modo a conhecer melhor WebM*@
                 
                 @*os ficheiros com extensão webm são reproduzíveis no leitor de vídeo do html5*@
-                <input type="file" name="filmefile" accept=".webm" style="color:blue;" />
+                <input type="file" name="filmefile" accept=".webm" style="     color: gainsboro;" />
                 <span asp-validation-for="Path" class="text-danger"></span>
             </div>
             
-            @*Div para adicionar a fotografia do filme*@
+            @*Div para adicionar multiplas fotografias do filme*@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label name="fotografia" class="control-label"></label>
-                
-                <input type="file" name="fotografia" accept=".jpg,.jpeg,.png" style="color:blue;" />
-                
+                <label  class="control-label">Fotografias</label>
+                <input type="file" name="fotografia" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple class="form-control" />   
             </div>
 
 
@@ -43,8 +40,8 @@
             @*Descrição do filme*@
             <div class="form-group">
                 <label asp-for="Descricao" class="control-label"></label>
-                <textarea asp-for="Descricao" rows="6" cols="50"></textarea>
                 <span asp-validation-for="Descricao" class="text-danger"></span>
+                <textarea asp-for="Descricao" rows="6" cols="50"></textarea>
             </div>
             @*Data de lançamento*@
             <div class="form-group">
