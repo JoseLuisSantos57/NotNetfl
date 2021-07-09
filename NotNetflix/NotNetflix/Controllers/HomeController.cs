@@ -23,6 +23,7 @@ namespace NotNetflix.Controllers
 
         public async Task<IActionResult> Index()
         {
+
             var lista = await _context.Filme.Include(f => f.ListasDeFotografias).ToListAsync();
             return View(lista);
         }
@@ -45,7 +46,7 @@ namespace NotNetflix.Controllers
                 return NotFound();
             }
 
-            var filme = await _context.Filme
+            var filme = await _context.Filme.Include(f => f.ListasDeFotografias).Include(f => f.ListasDeGeneros)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
 
@@ -54,7 +55,48 @@ namespace NotNetflix.Controllers
             {
                 return NotFound();
             }
-            return View();
+            return View(filme);
+        }
+        public async Task<IActionResult> AllFilmes(int a)
+        {
+            //caso o id enviado seja 1 ordena os filmes por data de lançamento
+            if (a == 1)
+            {
+                var filmes = await _context.Filme.OrderByDescending(i => i.Data).Include(l => l.ListasDeFotografias).ToListAsync();
+                return View(filmes);
+            }
+            else if (a == 2 )//caso o id enviado seja 2 ordena os filmes por data de lançamento
+            {
+                var filmes = await _context.Filme.OrderByDescending(i => i.Rating).Include(l => l.ListasDeFotografias).ToListAsync();
+                return View(filmes);
+            }
+            else if ( a == 3 )//caso o id enviado seja 3 ordena os filmes por data de lançamento
+            {
+                var filmes = await _context.Filme.OrderBy(i => i.Duracao).Include(l => l.ListasDeFotografias).ToListAsync();
+                return View(filmes);
+            }
+            else //caso o id enviado seja diferente ordena os filmes por ordem de adição ao site
+            {
+                var filmes = await _context.Filme.OrderBy(i => i.Id).Include(l => l.ListasDeFotografias).ToListAsync();
+                return View(filmes);
+            }
+
+            
+            
+        }
+        public async Task<IActionResult> SearchBar(string s)
+        {
+
+
+            if (!String.IsNullOrEmpty(s))
+            {
+                var pesquisa = await _context.Filme.Include(l => l.ListasDeFotografias).Where(n => n.Titulo.Contains(s) || n.Titulo.StartsWith(s) || n.Titulo.EndsWith(s)).ToListAsync();
+                return View(pesquisa);
+            }
+            else
+            {
+                return View();
+            }
         }
     }
 }

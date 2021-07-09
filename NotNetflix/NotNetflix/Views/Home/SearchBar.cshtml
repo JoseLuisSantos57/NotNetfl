@@ -1,0 +1,27 @@
+﻿@model IEnumerable<NotNetflix.Models.Filme>
+@{
+    ViewData["Title"] = "SearchBar";
+}
+
+
+    <div class="box">
+        <div class="head">
+            <h2>RESULTADOS DA PESQUISA</h2>
+            <p class="text-right"></p>
+        </div>
+        @foreach (var item in Model)
+        {
+            <div class="movie">
+                <div class="movie-image"> <span class="play"><span class="name"></span></span> <a asp-action="FilmePag" asp-route-id="@item.Id"><img src="~/fotos/@item.ListasDeFotografias.Min(f => f.Path)" alt="" /></a> </div>
+                <div class="rating">
+                    <p>RATING @item.Rating/10</p>
+                    <span> Data : @item.Data.Year</span>
+                </div>
+            </div>
+            
+        }
+        <div class="cl">&nbsp;</div>
+    </div>
+
+
+

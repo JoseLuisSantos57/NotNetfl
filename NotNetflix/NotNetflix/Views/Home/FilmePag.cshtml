@@ -1,3 +1,22 @@
-﻿@{
+﻿@model NotNetflix.Models.Filme
+@{
     ViewData["Title"] = "FilmePag";
 }
+
+
+
+<div>
+    <h1>@Model.Titulo</h1>
+    <video width="980" height="735" controls>
+        <source src="~/filmes/@Model.Path" type="video/webm">
+    </video>
+    @foreach (var gen in Model.ListasDeGeneros)
+    {
+        <p>@gen.Genre</p>
+    }
+    @foreach (var photo in Model.ListasDeFotografias)
+    {
+        <img src="~/fotos/@photo.Path" alt="foto do filme" height="152" width="100"/>
+    }
+    <p>@Model.Descricao</p>
+</div>

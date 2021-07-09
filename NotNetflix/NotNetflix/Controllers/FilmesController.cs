@@ -184,7 +184,6 @@ namespace NotNetflix.Controllers
                     }
                 }
 
-                
                 //adcionar fotografia
                 string nomefoto = " ";
                 foreach (IFormFile photo in fotografia) {
@@ -197,16 +196,11 @@ namespace NotNetflix.Controllers
                 }
                  if(correto)
                 {
-                    
-
                     try
                     {
 
                         _context.Add(filme);
-                        await _context.SaveChangesAsync();
-
-                        
-                        
+                        await _context.SaveChangesAsync(); 
                         using var stream = new FileStream(nomeFilme, FileMode.Create);
                         await filmefile.CopyToAsync(stream);
                   
@@ -232,7 +226,7 @@ namespace NotNetflix.Controllers
                         _context.Add(modelo);
                         await _context.SaveChangesAsync();
                         using var play = new FileStream(nomefoto, FileMode.Create);
-                            await photo.CopyToAsync(play);
+                        await photo.CopyToAsync(play);
                     }
                         return RedirectToAction(nameof(Index));
                     }
@@ -247,12 +241,6 @@ namespace NotNetflix.Controllers
 
                     
                 }
-
-               
-                
-
-              
-                
             }
 
             ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
@@ -338,6 +326,8 @@ namespace NotNetflix.Controllers
             }
 
             var filme = await _context.Filme
+                .Include(g => g.ListasDeGeneros)
+                .Include(l => l.ListasDeFotografias)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (filme == null)
             {
@@ -353,8 +343,25 @@ namespace NotNetflix.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var filme = await _context.Filme.FindAsync(id);
-
+            var fotos = await _context.Fotografia.Where(p => p.FilmeFK.Equals(id)).ToListAsync();
+            var generos = await _context.Filme.Include(g => g.ListasDeGeneros).Where(f => f.Id.Equals(id)).ToListAsync();
+            
+            
+            string localizacaoFicheiro = _caminho.WebRootPath;
+             var fileFilmeDelete = Path.Combine(localizacaoFicheiro, "filmes", filme.Path);
             _context.Filme.Remove(filme);
+            System.IO.File.Delete(fileFilmeDelete);
+            foreach (var gen in generos)
+            {
+                _context.Filme.Remove(gen);
+            }
+            foreach (var foto in fotos)
+            {
+                
+                var fileFotoDelete = Path.Combine(localizacaoFicheiro, "filmes", foto.Path);
+                _context.Fotografia.Remove(foto);
+                System.IO.File.Delete(fileFotoDelete);
+            }
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

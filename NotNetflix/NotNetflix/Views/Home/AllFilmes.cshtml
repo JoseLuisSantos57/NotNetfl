@@ -1,0 +1,30 @@
+﻿@model IEnumerable<NotNetflix.Models.Filme>
+
+@{
+    ViewData["Title"] = "AllFilmes";
+}
+
+
+
+
+<div id="content">
+    <div class="box">
+        <div class="head">
+            <h2>TODOS OS FILMES</h2>
+         <p class="text-right"><a>sdfsfdsf</a></p>
+        </div>
+
+        @foreach (var item in Model)
+        {
+
+            <div class="movie">
+                <div class="movie-image"> <span class="play"><span class="name"></span></span> <a asp-action="FilmePag" asp-route-id="@item.Id"><img src="~/fotos/@item.ListasDeFotografias.Min(f => f.Path)" alt="" /></a> </div>
+                <div class="rating">
+                    <p>RATING @item.Rating/10</p>
+                    <span> Data : @item.Data</span>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
