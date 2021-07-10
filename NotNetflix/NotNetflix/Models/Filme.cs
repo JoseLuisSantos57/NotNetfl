@@ -14,9 +14,7 @@ namespace NotNetflix.Models
             ListasDeFotografias = new HashSet<Fotografia>();
         }
 
-        //############################################
-        //Adicionar expressões regulares
-        //############################################
+        
 
     /// <summary>
     /// Identificador de filme
@@ -32,7 +30,7 @@ namespace NotNetflix.Models
     /// <summary>
     /// Titulo do filme
     /// </summary>
-    [Required]
+    //[Required]
     [StringLength(50, ErrorMessage = "O {0} não pode ter mais de {1} carateres." )]
     public string Titulo { get; set; }
 
@@ -51,7 +49,7 @@ namespace NotNetflix.Models
     /// <summary>
     /// Duração do filme
     /// </summary>
-    [Required(ErrorMessage = "A duração do filme é de preenchimento obrigatório")]
+    //[Required(ErrorMessage = "A duração do filme é de preenchimento obrigatório")]
     [RegularExpression("[0-9]{1,4}")]
     [Display(Name = "Duração do filme em minutos")]
     public double Duracao { get; set; }

@@ -59,18 +59,19 @@ namespace NotNetflix.Controllers
         }
         public async Task<IActionResult> AllFilmes(int a)
         {
+            //fazer switch case
             //caso o id enviado seja 1 ordena os filmes por data de lançamento
             if (a == 1)
             {
                 var filmes = await _context.Filme.OrderByDescending(i => i.Data).Include(l => l.ListasDeFotografias).ToListAsync();
                 return View(filmes);
             }
-            else if (a == 2 )//caso o id enviado seja 2 ordena os filmes por data de lançamento
+            else if (a == 2 )//caso o id enviado seja 2 ordena os filmes por rating
             {
                 var filmes = await _context.Filme.OrderByDescending(i => i.Rating).Include(l => l.ListasDeFotografias).ToListAsync();
                 return View(filmes);
             }
-            else if ( a == 3 )//caso o id enviado seja 3 ordena os filmes por data de lançamento
+            else if ( a == 3 )//caso o id enviado seja 3 ordena os filmes por duração
             {
                 var filmes = await _context.Filme.OrderBy(i => i.Duracao).Include(l => l.ListasDeFotografias).ToListAsync();
                 return View(filmes);

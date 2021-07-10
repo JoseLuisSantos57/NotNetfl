@@ -124,7 +124,8 @@ namespace NotNetflix.Controllers
                     // adicionar esta lista de géneros ao filme
                     filme.ListasDeGeneros = (ICollection<Genero>)listaGeneros;
                 }
-
+                //horas:fração dos minutos da hora 
+                //pretendido----> horas:minutos
                 TimeSpan t = TimeSpan.FromMinutes(filme.Duracao);
                 filme.Duracao = t.TotalHours;
                 
@@ -219,9 +220,7 @@ namespace NotNetflix.Controllers
                         nomefoto = nomefoto + extensao;
                         
                         modelo.Path = nomefoto;
-                        string localizacaodoficheiro = _caminho.WebRootPath;
-
-                        nomefoto = Path.Combine(localizacaodoficheiro, "fotos", nomefoto);
+                        nomefoto = Path.Combine(_caminho.WebRootPath, "fotos", nomefoto);
                         modelo.FilmeFK = filme.Id;
                         _context.Add(modelo);
                         await _context.SaveChangesAsync();
@@ -232,8 +231,7 @@ namespace NotNetflix.Controllers
                     }
                     catch (Exception o)
                     {
-                        var erro = o.GetBaseException().ToString();
-                        ModelState.AddModelError("", erro);
+                        ModelState.AddModelError("", o.GetBaseException().ToString());
                         ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
                         return View(filme);
                     }
@@ -255,17 +253,13 @@ namespace NotNetflix.Controllers
                 return NotFound();
             }
 
-            var filme = await _context.Filme.FindAsync(id);
-            if (filme == null)
+            var dados = await _context.Filme.Include(g => g.ListasDeGeneros).Include(l => l.ListasDeFotografias).FirstOrDefaultAsync(m => m.Id == id);
+            if (dados == null)
             {
                 return NotFound();
             }
-
-
             ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
-            ViewBag.Fotos = await _context.Filme.Include(f => f.ListasDeFotografias).ToListAsync();
- 
-            return View(filme);
+            return View(dados);
 
 
         }
@@ -275,7 +269,7 @@ namespace NotNetflix.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Path,Titulo,Descricao,Data,Duracao,Rating")] Filme filme, IFormFile filmefile, int[] listaGenerosEditados, IFormFile fotografia)
+        public async Task<IActionResult> Edit(int id, [Bind("Titulo,Descricao,Data,Duracao,Rating")] Filme filme, IFormFile filmefile, int[] listaGenerosEditados, List<IFormFile> fotografia, string originalFile, int[]listaFotosDelete)
         {
             /*Introduzir os dados novos do filme
              * Receber o ficheiro do filme --> se for igual não altera
@@ -284,22 +278,163 @@ namespace NotNetflix.Controllers
              * Tratar dos outros dados 
              */
 
+            
+            //??
+            var movie= await _context.Filme
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            movie.Path = originalFile;//??
 
             //se o filme não existir retorna not found
-            if (id != filme.Id)
+            if (id != movie.Id)
             {
                 return NotFound();
             }
+            
 
+            //Modelstate não passa válido, será necessário verificar a sua validade?
             if (ModelState.IsValid)
             {
+                string nomeFilme="";
                 
+                //flag indicadora de alterações nos ficheiros das fotografias
+                bool flagfotos = false;
+                
+                //flag indicadora de alterações no ficheiro do filme
+                bool flagfilmes = false;
 
+                string localizacaoFicheiro = _caminho.WebRootPath;
+                
+                //flag indicadora da existência de erros 
+                bool valido = true;
+                
+                
+                //verificar se o ficheiro do filme foi introduzido
+                if (filmefile != null) {
+                    //Introdução de dados do filme
+                    //verificar se ele é válido
+                    
+                    if (filmefile.ContentType == "video/webm")
+                    {   
+                        
+                        //definir o nome do ficheiro
+                        Guid g;
+                        g = Guid.NewGuid();
+
+                        nomeFilme = filme.Titulo + "_" + g.ToString();
+
+                        //determinar a expressão do nome do filme
+                        string extensao = Path.GetExtension(filmefile.FileName).ToLower();
+
+                        nomeFilme = nomeFilme + extensao;
+
+                        filme.Path = nomeFilme;
+
+                        nomeFilme = Path.Combine(localizacaoFicheiro, "filmes", nomeFilme);
+                        
+                        //o ficheiro existe e é válido
+                        flagfilmes = true;
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "O ficheiro do filme introduzido não é válido");
+                        valido = false;
+                    
+                    }
+                }
+                    //se o array com os ids das fotos a apagar possuir elementos
+                    if (listaFotosDelete != null)
+                    {
+                        try
+                        {
+                        //verificar todas os ids das fotografias do filme para verificar se estão no array de fotografias a apagar
+                            foreach (var foto in filme.ListasDeFotografias)
+                            {
+                                for (int i = 0; i <= listaFotosDelete.Length; i++)
+                                {
+                                    if (foto.Id == listaFotosDelete[i])
+                                    {
+                                        //vai buscar a localização do ficheiro no servidor
+                                        var fileFotoDelete = Path.Combine(localizacaoFicheiro, "filmes", foto.Path);
+                                        //remove a fotografia da tabela
+                                        _context.Fotografia.Remove(foto);
+                                        //apaga o ficheiro do servidor
+                                        System.IO.File.Delete(fileFotoDelete);
+                                    }
+
+                                }
+
+                            }
+
+                            await _context.SaveChangesAsync();
+                        }
+                        catch(Exception e)
+                        {
+
+                        }
+                    }
+                    
+                    //adicionar fotografias
+
+                string nomefoto = " ";
+                //caso a lista de fotografias possua elementos
+                if (fotografia != null)
+                {
+                    foreach (IFormFile photo in fotografia)
+                    {
+                        //verifica se os elementos da lista de fotografias são válidos
+                        if (photo.ContentType != "image/jpg" || photo.ContentType != "image/jpeg" || photo.ContentType != "image/png")
+                        {
+                            ModelState.AddModelError("", "Adicione um ficheiro válido de imagem");
+                            flagfotos = false;
+                            valido = false;
+                        }
+                    }
+                
+                
+                
+                }
+                //caso não tenham ocorrido erros
+                if (valido) { 
                 try
                 {
-                   
-                    _context.Update(filme);
-                    await _context.SaveChangesAsync();
+                    //se foram introduzidas novas fotografias
+                    if (flagfotos)
+                    {
+                        
+                    
+                        foreach (IFormFile photo in fotografia)
+                        {
+                            var modelo = new Fotografia();
+                            //definir o nome do ficheiro
+                            Guid a;
+                            a = Guid.NewGuid();
+                            nomefoto = filme.Titulo + "_" + a.ToString();
+
+                            //determinar a expressão do nome do filme
+                            string extensao = Path.GetExtension(photo.FileName).ToLower();
+
+                            nomefoto = nomefoto + extensao;
+
+                            modelo.Path = nomefoto;
+                            nomefoto = Path.Combine(_caminho.WebRootPath, "fotos", nomefoto);
+                            modelo.FilmeFK = filme.Id;
+                            _context.Add(modelo);
+                            await _context.SaveChangesAsync();
+                            using var play = new FileStream(nomefoto, FileMode.Create);
+                            await photo.CopyToAsync(play);
+                        }
+                       }
+                        //se foi introduzido um novo ficheiro de filme
+                        if (flagfilmes) { 
+                            //apaga o ficheiro antigo do servidor
+                            System.IO.File.Delete(originalFile);//originalFile?
+                            //adiciona o filme à base de dados
+                            _context.Update(filme);
+                            await _context.SaveChangesAsync();
+                            using var stream = new FileStream(nomeFilme, FileMode.Create);
+                            await filmefile.CopyToAsync(stream);
+                        }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -313,7 +448,10 @@ namespace NotNetflix.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
+                }
+                  
             }
+            ViewBag.Generos = await _context.Filme.Include(g => g.ListasDeGeneros).ToListAsync();
             return View(filme);
         }
 

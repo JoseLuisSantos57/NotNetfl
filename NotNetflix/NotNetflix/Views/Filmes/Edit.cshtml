@@ -16,13 +16,18 @@
             <div class="form-group">
                 <p>Ficheiro do filme atual</p>
                 <video width="320" height="240" controls>
-                    <source src="~/filmes/@Html.DisplayFor(modelItem => modelItem.Path)" type="video/webm">
+                    <source src="~/filmes/@Model.Path" type="video/webm">
 
                     Your browser does not support the video tag. <!-- Text to be shown incase browser doesnt support html5 -->
                 </video>
-                <label asp-for="Path" class="control-label"></label>
-                <input asp-for="Path" class="form-control" />
-                <span asp-validation-for="Path" class="text-danger"></span>
+                <div class="form-group">
+                    <label asp-for="Path" class="control-label"></label>
+                    @*https://en.wikipedia.org/wiki/WebM de modo a conhecer melhor WebM*@
+
+                    @*os ficheiros com extensão webm são reproduzíveis no leitor de vídeo do html5*@
+                    <input type="file" name="filmefile" accept=".webm" style="     color: gainsboro;" />
+                    <span asp-validation-for="Path" class="text-danger"></span>
+                </div>
 
             </div>
             <div class="form-group">
@@ -57,21 +62,38 @@
                 }
             </div>
             <div class="form-group">
-                @foreach (var fotos in Model.ListasDeFotografias)
+
+                @foreach (var fotos in Model.ListasDeFotografias.OrderBy(i => i.Id))
                 {
+
                     <label class="control-label">Fotografias</label>
-                    <input asp-for="@fotos.Path" class="form-control"/>
-                    <input type="file" name="fotografia" accept=".jpg,.jpeg,.png" style="color:blue;" />
+                    <img src="~/fotos/@fotos.Path" alt="" />
+                    <a value="@fotos.Id" name="listaFotosDelete" > APAGAR FOTOGRAFIA</a>
                 }
             </div>
             <div class="form-group">
-                @foreach (var gen in Model.ListasDeGeneros)
+                @foreach (var gen in ViewBag.Generos)
                 {
-                    <input  asp-for="ListasDeGeneros"  name="listaGenerosEditados" class="form-control" />
+
+                    @if (Model.ListasDeGeneros.Contains(gen))
+                    {
+
+                        <input type="checkbox" name="listaGenerosEditados" class="form-control" checked />@gen.Genre<br /><br />
+                    }
+                    else
+                    {
+                        <input type="checkbox" name="listaGenerosEditados" class="form-control" />@gen.Genre<br /><br />
+                    }
                 }
             </div>
+            @*Aceitar fotografias novas*@
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <label class="control-label">Fotografias</label>
+                <input type="file" name="fotografia" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Edit" class="btn btn-primary" />
             </div>
         </form>
     </div>

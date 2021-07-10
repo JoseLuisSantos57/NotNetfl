@@ -42,8 +42,8 @@
             <div id="sub-navigation">
                 <ul>
                     <li><a asp-controller="Home" asp-action="AllFilmes">SHOW ALL</a></li>@*Atenção aqui*@
-                    <li><a asp-action="Index" asp-controller="Filmes">MOST RECENT MOVIE</a></li>
-                    <li><a asp-action="Index" asp-controller="Filmes">TOP RATED</a></li>
+                    <li><a asp-action="AllFilmes" asp-controller="Home" asp-route-id="1">MOST RECENT MOVIE</a></li>
+                    <li><a asp-action="AllFilmes" asp-controller="Home" asp-route-id="2">TOP RATED</a></li>
                     <li><a href="#">MOST COMMENTED</a></li>
                 </ul>
                 <div id="search">
