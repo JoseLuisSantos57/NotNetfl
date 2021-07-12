@@ -12,10 +12,11 @@ using NotNetflix.Data;
 using NotNetflix.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using WMPLib;
 
 namespace NotNetflix.Controllers
 {
-    [AllowAnonymous]
+    [Authorize(Roles = "Gestor")] // esta 'anotação' garante que só as pessoas autenticadas têm acesso aos recursos
     public class FilmesController : Controller
     {
 
@@ -36,56 +37,6 @@ namespace NotNetflix.Controllers
             _caminho = caminho;
             _userManager = userManager;
 
-        }
-        [AllowAnonymous]
-        // GET: Filmes
-        public async Task<IActionResult> Index()
-        {
-            //pretendemos vizualizar os dados todos de cada  filme o que é semelhante a executar a subconsulta
-            //Select * from filmes, fotografias where filmes.id=fotografias.filmeFK
-
-            /*
-             SELECT fotografia
-            FROM fotografia, filme
-            WHERE fotografia.FilmeFk = filme.listadefotografias
-             
-             */
-            /* var lista_de_fotos = ;
-             var fotografias = await _context.Fotografia.Where(f => );
-
-             */
-
-            var listaFilmes = await  _context.Filme.Include(f => f.ListasDeFotografias).Include(f => f.ListasDeGeneros).ToListAsync();
-            //é possível utilizar uma viewbag(transporte do controller para a view)
-            //ViewBag.Fotografias = lista_de_fotos;
-
-            /* var listafotos = new ListarFotosViewModel
-             {
-                 ListaFotos = lista_de_fotos
-             };*/
-
-            return View(listaFilmes);
-        }
-
-        // GET: Filmes/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var filme = await _context.Filme
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            
-
-            if (filme == null)
-            {
-                return NotFound();
-            }
-
-            return View(filme);
         }
 
         // GET: Filmes/Create
@@ -226,6 +177,7 @@ namespace NotNetflix.Controllers
                         await _context.SaveChangesAsync();
                         using var play = new FileStream(nomefoto, FileMode.Create);
                         await photo.CopyToAsync(play);
+                        WindowsMediaPlayer
                     }
                         return RedirectToAction(nameof(Index));
                     }
@@ -244,7 +196,6 @@ namespace NotNetflix.Controllers
             ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
             return View(filme);
         }
-
         // GET: Filmes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -269,7 +220,7 @@ namespace NotNetflix.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Titulo,Descricao,Data,Duracao,Rating")] Filme filme, IFormFile filmefile, int[] listaGenerosEditados, List<IFormFile> fotografia, string originalFile, int[]listaFotosDelete)
+        public async Task<IActionResult> Edit(int id, [Bind("Titulo,Descricao,Data,Duracao,Rating")] Filme filme, IFormFile filmefile, int[] listaGenerosEditados, List<IFormFile> fotografia, int[]listaFotosDelete)
         {
             /*Introduzir os dados novos do filme
              * Receber o ficheiro do filme --> se for igual não altera
@@ -278,45 +229,125 @@ namespace NotNetflix.Controllers
              * Tratar dos outros dados 
              */
 
+            //o problema está em associar o id recebido pelo método e o objeto filme recebido
             
-            //??
-            var movie= await _context.Filme
-                .FirstOrDefaultAsync(m => m.Id == id);
+            filme = _context.Filme.Include(g => g.ListasDeGeneros).Include(f => f.ListasDeFotografias).FirstOrDefault(f => f.Id == id);
 
-            movie.Path = originalFile;//??
-
-            //se o filme não existir retorna not found
-            if (id != movie.Id)
+            if (filme == null)
             {
                 return NotFound();
             }
-            
 
-            //Modelstate não passa válido, será necessário verificar a sua validade?
+
+            //problemas aqui
             if (ModelState.IsValid)
             {
-                string nomeFilme="";
-                
-                //flag indicadora de alterações nos ficheiros das fotografias
-                bool flagfotos = false;
-                
-                //flag indicadora de alterações no ficheiro do filme
-                bool flagfilmes = false;
+                //varíavel de controlo para tratar os erros do modelstate
+                bool correto = true;
 
-                string localizacaoFicheiro = _caminho.WebRootPath;
+                //variável de controlo para a introdução de ficheiros
+                bool intrFotos = false;
+
+                //variável de controlo para a introdução de ficheiros
+                bool intrFilme = false;
+
+
+                //verificar a data
+                if (filme.Data.CompareTo(DateTime.Now)>0)
+                {
+                    ModelState.AddModelError("", "Introduza por favor uma data válida");
+                    correto = false;
+                }
+
+                if (filmefile != null)
+                {
+                    if(filmefile.ContentType != "video/webm")
+                    {
+                        ModelState.AddModelError("", "Adicione um ficheiro de vídeo válido");
+                        correto = false;
+                    }
+                    else
+                    {
+                        intrFilme = true;
+                    }
+                }
+
+                //verificar as fotografias inseridas e possibilidade de apagar fotos já existentes
+                if(fotografia != null)
+                {
+                    foreach(var foto in fotografia)
+                    {
+                        if(foto.ContentType != "image/jpg" || foto.ContentType != "image/jpeg" || foto.ContentType != "image/png")
+                        {
+                            ModelState.AddModelError("", "Adicione um ficheiro de imagem válido por favor");
+                            correto = false;
+                        }
+                        else
+                        {
+                            intrFotos = true; 
+                        }
+                    }
+                }
                 
-                //flag indicadora da existência de erros 
-                bool valido = true;
-                
-                
-                //verificar se o ficheiro do filme foi introduzido
-                if (filmefile != null) {
-                    //Introdução de dados do filme
-                    //verificar se ele é válido
+
+                //se os dados introduzidos forem válidos altera os dados da base de dados
+                if (correto)
+                {
+                    string nomeFoto = "";
+
+                    string nomeFilme = ""; 
+                    //tratar as fotos a apagar 
+                    if(listaFotosDelete != null)
+                    {
+                        foreach(var foto in _context.Fotografia.Where(f => listaFotosDelete.Contains(f.Id)).ToList())
+                        {
+                            _context.Fotografia.Remove(foto);
+                            System.IO.File.Delete(Path.Combine(_caminho.WebRootPath, "filmes", foto.Path));
+                        }
+                    }
                     
-                    if (filmefile.ContentType == "video/webm")
-                    {   
-                        
+                    if (listaGenerosEditados != null)
+                    {
+                        //adicionar as géneros escolhidos à lista
+                        // foram escolhidos géneros
+                        var listaGeneros = _context.Genero.Where(g => listaGenerosEditados.Contains(g.Id)).ToList();
+                        // adicionar esta lista de géneros ao filme
+                        filme.ListasDeGeneros = (ICollection<Genero>)listaGeneros;
+                    }
+
+                    //se foram introduzidas novas fotografias
+                    if (intrFotos) { 
+                        //criar os ficheiros das fotografias
+                        foreach (IFormFile photo in fotografia)
+                        {
+                            var modelo = new Fotografia();
+                            //definir o nome do ficheiro
+                            Guid a;
+                            a = Guid.NewGuid();
+                            nomeFoto = filme.Titulo + "_" + a.ToString();
+
+                            //determinar a expressão do nome do filme
+                            nomeFoto = nomeFoto + Path.GetExtension(photo.FileName).ToLower();
+
+                            modelo.Path = nomeFoto;
+                            nomeFoto = Path.Combine(_caminho.WebRootPath, "fotos", nomeFoto);
+                            modelo.FilmeFK = filme.Id;
+                            try
+                            {
+                                _context.Add(modelo);
+                                await _context.SaveChangesAsync();
+                                using var play = new FileStream(nomeFoto, FileMode.Create);
+                                await photo.CopyToAsync(play);
+                            }
+                            catch(Exception o)
+                            {
+
+                            }
+                        }
+                    }
+                    //caso o filme tenha sido alterado vamos criar o ficheiro e alterar na base de dados
+                    if (intrFilme)
+                    {
                         //definir o nome do ficheiro
                         Guid g;
                         g = Guid.NewGuid();
@@ -324,137 +355,45 @@ namespace NotNetflix.Controllers
                         nomeFilme = filme.Titulo + "_" + g.ToString();
 
                         //determinar a expressão do nome do filme
-                        string extensao = Path.GetExtension(filmefile.FileName).ToLower();
 
-                        nomeFilme = nomeFilme + extensao;
+                        nomeFilme = nomeFilme + Path.GetExtension(filmefile.FileName).ToLower();
 
                         filme.Path = nomeFilme;
+                        nomeFilme = Path.Combine(_caminho.WebRootPath, "filmes", nomeFilme);
+                    }
+                
 
-                        nomeFilme = Path.Combine(localizacaoFicheiro, "filmes", nomeFilme);
+
+                    //alterar os dados na base de dados
+                    try
+                    {
+                        //dá update ao filme
+                        _context.Update(filme);
                         
-                        //o ficheiro existe e é válido
-                        flagfilmes = true;
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "O ficheiro do filme introduzido não é válido");
-                        valido = false;
-                    
-                    }
-                }
-                    //se o array com os ids das fotos a apagar possuir elementos
-                    if (listaFotosDelete != null)
-                    {
-                        try
-                        {
-                        //verificar todas os ids das fotografias do filme para verificar se estão no array de fotografias a apagar
-                            foreach (var foto in filme.ListasDeFotografias)
-                            {
-                                for (int i = 0; i <= listaFotosDelete.Length; i++)
-                                {
-                                    if (foto.Id == listaFotosDelete[i])
-                                    {
-                                        //vai buscar a localização do ficheiro no servidor
-                                        var fileFotoDelete = Path.Combine(localizacaoFicheiro, "filmes", foto.Path);
-                                        //remove a fotografia da tabela
-                                        _context.Fotografia.Remove(foto);
-                                        //apaga o ficheiro do servidor
-                                        System.IO.File.Delete(fileFotoDelete);
-                                    }
-
-                                }
-
-                            }
-
-                            await _context.SaveChangesAsync();
-                        }
-                        catch(Exception e)
-                        {
-
-                        }
-                    }
-                    
-                    //adicionar fotografias
-
-                string nomefoto = " ";
-                //caso a lista de fotografias possua elementos
-                if (fotografia != null)
-                {
-                    foreach (IFormFile photo in fotografia)
-                    {
-                        //verifica se os elementos da lista de fotografias são válidos
-                        if (photo.ContentType != "image/jpg" || photo.ContentType != "image/jpeg" || photo.ContentType != "image/png")
-                        {
-                            ModelState.AddModelError("", "Adicione um ficheiro válido de imagem");
-                            flagfotos = false;
-                            valido = false;
-                        }
-                    }
-                
-                
-                
-                }
-                //caso não tenham ocorrido erros
-                if (valido) { 
-                try
-                {
-                    //se foram introduzidas novas fotografias
-                    if (flagfotos)
-                    {
+                        //guarda as alterações 
+                        await _context.SaveChangesAsync();
                         
-                    
-                        foreach (IFormFile photo in fotografia)
-                        {
-                            var modelo = new Fotografia();
-                            //definir o nome do ficheiro
-                            Guid a;
-                            a = Guid.NewGuid();
-                            nomefoto = filme.Titulo + "_" + a.ToString();
-
-                            //determinar a expressão do nome do filme
-                            string extensao = Path.GetExtension(photo.FileName).ToLower();
-
-                            nomefoto = nomefoto + extensao;
-
-                            modelo.Path = nomefoto;
-                            nomefoto = Path.Combine(_caminho.WebRootPath, "fotos", nomefoto);
-                            modelo.FilmeFK = filme.Id;
-                            _context.Add(modelo);
-                            await _context.SaveChangesAsync();
-                            using var play = new FileStream(nomefoto, FileMode.Create);
-                            await photo.CopyToAsync(play);
+                        //verifica se se alterou o ficheiro do filme
+                        if (intrFilme) {
+                            using var play = new FileStream(nomeFilme, FileMode.Create);
+                            //cria o ficheiro
+                            await filmefile.CopyToAsync(play);
                         }
-                       }
-                        //se foi introduzido um novo ficheiro de filme
-                        if (flagfilmes) { 
-                            //apaga o ficheiro antigo do servidor
-                            System.IO.File.Delete(originalFile);//originalFile?
-                            //adiciona o filme à base de dados
-                            _context.Update(filme);
-                            await _context.SaveChangesAsync();
-                            using var stream = new FileStream(nomeFilme, FileMode.Create);
-                            await filmefile.CopyToAsync(stream);
-                        }
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!FilmeExists(filme.Id))
-                    {
-                        return NotFound();
                     }
-                    else
+                    catch(DbUpdateConcurrencyException)
                     {
-                        throw;
+
                     }
+
+                    //se cheguei até aqui envio de volta para o index
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
-                }
-                  
             }
+
             ViewBag.Generos = await _context.Filme.Include(g => g.ListasDeGeneros).ToListAsync();
             return View(filme);
         }
-
+        [Authorize(Roles = "Gestor")]
         // GET: Filmes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

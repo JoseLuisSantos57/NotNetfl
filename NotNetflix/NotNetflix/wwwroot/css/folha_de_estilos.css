@@ -271,28 +271,28 @@ h1#logo {
         }
 
     .box .movie {
-        width: 152px;
+        width: 143px;
         float: left;
-        padding-right: 12px;
+        padding-right: 20.3px;
     }
 
 .movie-image {
     float: left;
-    width: 152px;
-    height: 214px;
+    width: 143px;
+    height: 210px;
     position: relative;
 }
 
     .movie-image img {
-        width: 152px;
-        height: 214px;
+        width: 143px;
+        height: 210px;
     }
 
     .movie-image a {
         float: left;
         display: inline;
-        width: 152px;
-        height: 214px;
+        width: 143px;
+        height: 210px;
         position: relative;
         z-index: 2;
     }

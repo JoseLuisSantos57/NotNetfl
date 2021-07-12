@@ -149,7 +149,7 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
 
                     //Para a criação do gestor vai verificar se o email é o seguinte
                     //if (Input.User.Email.CompareTo("gestor@gmail.com") == 0) { 
-                            await _userManager.AddToRoleAsync(user, "Gestor");
+                            await _userManager.AddToRoleAsync(user, "Utilizador");
                         Input.User.Email = Input.Email; // atribuir ao objeto 'criador' o email fornecido pelo utilizador,
                                                         // a quando da escreita dos dados na interface
                                                         // exatamente a mesma tarefa feita na linha 128

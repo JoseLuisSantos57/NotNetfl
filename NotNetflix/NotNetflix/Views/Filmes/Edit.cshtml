@@ -55,20 +55,15 @@
                 <input asp-for="Rating" class="form-control" />
                 <span asp-validation-for="Rating" class="text-danger"></span>
             </div>
+            <label class="control-label">Fotografias</label>
             <div class="form-group">
-                @foreach (var gen in Model.ListasDeGeneros)
-                {
-                    <p>@gen.Genre &nbsp;</p>
-                }
-            </div>
-            <div class="form-group">
-
+                
                 @foreach (var fotos in Model.ListasDeFotografias.OrderBy(i => i.Id))
                 {
 
-                    <label class="control-label">Fotografias</label>
+                    
                     <img src="~/fotos/@fotos.Path" alt="" />
-                    <a value="@fotos.Id" name="listaFotosDelete" > APAGAR FOTOGRAFIA</a>
+                    <button value="@fotos.Id" name="listaFotosDelete" > APAGAR</button>
                 }
             </div>
             <div class="form-group">
@@ -90,7 +85,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label">Fotografias</label>
-                <input type="file" name="fotografia" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple class="form-control" />
+                <input type="file" name="fotografia" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple class="form-control" /><br />
             </div>
             <div class="form-group">
                 <input type="submit" value="Edit" class="btn btn-primary" />

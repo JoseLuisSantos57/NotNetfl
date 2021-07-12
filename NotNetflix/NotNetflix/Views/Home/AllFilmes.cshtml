@@ -7,24 +7,44 @@
 
 
 
-<div id="content">
-    <div class="box">
-        <div class="head">
-            <h2>TODOS OS FILMES</h2>
-         <p class="text-right"><a>sdfsfdsf</a></p>
-        </div>
-        @*Adicionar os filmes, 6 em cada linha por um numero indefinido de linhas(usar ciclo for() )*@
-        @foreach (var item in Model)
-        {
+<div class="box">
+    <div class="head">
+        <h2>@ViewBag.Titulo</h2>
+        <p class="text-right"><a asp-action="Index" asp-controller="Home">VOLTAR</a></p>
+    </div>
+    @*Adicionar os filmes, 6 em cada linha por um numero indefinido de linhas(usar ciclo for() )*@
 
+    @foreach (var item in Model)
+    {
+
+
+        @if (User.Identity.IsAuthenticated)
+        {
             <div class="movie">
                 <div class="movie-image"> <span class="play"><span class="name"></span></span> <a asp-action="FilmePag" asp-route-id="@item.Id"><img src="~/fotos/@item.ListasDeFotografias.Min(f => f.Path)" alt="" /></a> </div>
                 <div class="rating">
-                    <p>RATING @item.Rating/10</p>
-                    <span> Data : @item.Data</span>
+                    <p>RATING @item.Rating/10</p><br />
+                    <p>Data : @item.Data.Year</p><br />
+                    @if (User.IsInRole("Gestor"))
+                    {
+                        <a asp-action="Edit" asp-controller="Filmes" asp-route-id="@item.Id">Edit</a>
+                        <a asp-action="Details" asp-controller="Filmes" asp-route-id="@item.Id"> Details </a>
+                        <a asp-action="Delete" asp-controller="Filmes" asp-route-id="@item.Id"> Delete </a>
+                    }
                 </div>
             </div>
-
         }
-    </div>
+        else
+        {
+            <div class="movie">
+                <div class="movie-image"> <span class="play"><span class="name"></span></span> <a asp-area="Identity" asp-page="/Account/Login"><img src="~/fotos/@item.ListasDeFotografias.Min(f => f.Path)" alt="" /></a> </div>
+                <div class="rating">
+                    <p>RATING @item.Rating/10</p><br />
+                    <p>Data : @item.Data.Year</p>
+
+                </div>
+            </div>
+        }
+    }
+
 </div>

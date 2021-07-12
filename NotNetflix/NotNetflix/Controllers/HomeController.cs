@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NotNetflix.Data;
@@ -11,19 +13,23 @@ using System.Threading.Tasks;
 
 namespace NotNetflix.Controllers
 {
+    
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly NotNetflixDataBase _context;
-        public HomeController(ILogger<HomeController> logger, NotNetflixDataBase context)
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        public HomeController(ILogger<HomeController> logger, NotNetflixDataBase context, SignInManager<ApplicationUser> signInManager)
         {
             _logger = logger;
             _context = context;
+            _signInManager = signInManager;
         }
 
         public async Task<IActionResult> Index()
         {
-
+            string[] headers= { "RECENTES","A ESCOLHA DOS CRÍTICOS", "POR DURAÇÃO" };
+            ViewBag.Headers = headers;
             var lista = await _context.Filme.Include(f => f.ListasDeFotografias).ToListAsync();
             return View(lista);
         }
@@ -38,7 +44,7 @@ namespace NotNetflix.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
+        [Authorize(Roles = "Gestor,Utilizador")]
         public async Task<IActionResult> FilmePag(int? id)
         {
             if (id == null)
@@ -57,47 +63,53 @@ namespace NotNetflix.Controllers
             }
             return View(filme);
         }
-        public async Task<IActionResult> AllFilmes(int a)
+        public async Task<IActionResult> AllFilmes(int? a, string? s)
         {
             //fazer switch case
             //caso o id enviado seja 1 ordena os filmes por data de lançamento
-            if (a == 1)
+            switch (a)
             {
-                var filmes = await _context.Filme.OrderByDescending(i => i.Data).Include(l => l.ListasDeFotografias).ToListAsync();
-                return View(filmes);
-            }
-            else if (a == 2 )//caso o id enviado seja 2 ordena os filmes por rating
-            {
-                var filmes = await _context.Filme.OrderByDescending(i => i.Rating).Include(l => l.ListasDeFotografias).ToListAsync();
-                return View(filmes);
-            }
-            else if ( a == 3 )//caso o id enviado seja 3 ordena os filmes por duração
-            {
-                var filmes = await _context.Filme.OrderBy(i => i.Duracao).Include(l => l.ListasDeFotografias).ToListAsync();
-                return View(filmes);
-            }
-            else //caso o id enviado seja diferente ordena os filmes por ordem de adição ao site
-            {
+                case 1:
+                var filmesRec = await _context.Filme.OrderByDescending(i => i.Data).Include(l => l.ListasDeFotografias).ToListAsync();
+                ViewBag.Titulo = "FILMES MAIS RECENTES";
+                return View(filmesRec);
+                   
+
+                case 2:
+                var filmesRat = await _context.Filme.OrderByDescending(i => i.Rating).Include(l => l.ListasDeFotografias).ToListAsync();
+                ViewBag.Titulo = "ESCOLHA DOS CRÍTICOS";
+                return View(filmesRat);
+                    
+
+                case 3:
+                var filmesDur = await _context.Filme.OrderBy(i => i.Duracao).Include(l => l.ListasDeFotografias).ToListAsync();
+                ViewBag.Titulo = "FILMES MAIS LONGOS";
+                return View(filmesDur);
+                
+
+                case 4:
+                if (!String.IsNullOrEmpty(s))
+                    {
+                        var pesquisa = await _context.Filme.Include(l => l.ListasDeFotografias).Where(n => n.Titulo.Contains(s)).ToListAsync();
+                        ViewBag.Titulo = "RESULTADO DA PESQUISA";
+                        return View(pesquisa);
+                    }
+                    else
+                    {
+                        return View();
+                    }
+                    
+
+                default:
                 var filmes = await _context.Filme.OrderBy(i => i.Id).Include(l => l.ListasDeFotografias).ToListAsync();
+                ViewBag.Titulo = "FILMES DISPONÍVEIS";
                 return View(filmes);
             }
-
+            
+      
             
             
         }
-        public async Task<IActionResult> SearchBar(string s)
-        {
-
-
-            if (!String.IsNullOrEmpty(s))
-            {
-                var pesquisa = await _context.Filme.Include(l => l.ListasDeFotografias).Where(n => n.Titulo.Contains(s) || n.Titulo.StartsWith(s) || n.Titulo.EndsWith(s)).ToListAsync();
-                return View(pesquisa);
-            }
-            else
-            {
-                return View();
-            }
-        }
+        
     }
 }

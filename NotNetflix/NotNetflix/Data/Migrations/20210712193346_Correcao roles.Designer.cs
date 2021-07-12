@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NotNetflix.Data;
 
 namespace NotNetflix.Data.Migrations
 {
     [DbContext(typeof(NotNetflixDataBase))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210712193346_Correcao roles")]
+    partial class Correcaoroles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,15 +80,15 @@ namespace NotNetflix.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "u",
-                            ConcurrencyStamp = "2aca5b8b-7869-432c-8e5b-9e079c701fd1",
+                            Id = "c",
+                            ConcurrencyStamp = "3ddebe13-552e-4470-b1b8-93f1006c3238",
                             Name = "Utilizador",
                             NormalizedName = "UTILIZADOR"
                         },
                         new
                         {
                             Id = "g",
-                            ConcurrencyStamp = "d4cbc318-269f-44c9-9b44-c2055a3dde1c",
+                            ConcurrencyStamp = "8cf7fa27-a935-4b76-ae6b-262f42426647",
                             Name = "Gestor",
                             NormalizedName = "GESTOR"
                         });

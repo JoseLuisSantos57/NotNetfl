@@ -32,7 +32,7 @@ namespace NotNetflix.Data
             base.OnModelCreating(modelbuilder);
 
             modelbuilder.Entity<IdentityRole>().HasData(
-             new IdentityRole { Id = "c", Name = "Utilizador", NormalizedName = "CRIADOR" },
+             new IdentityRole { Id = "u", Name = "Utilizador", NormalizedName = "UTILIZADOR" },
              new IdentityRole { Id = "g", Name = "Gestor", NormalizedName = "GESTOR" }
              );
 
