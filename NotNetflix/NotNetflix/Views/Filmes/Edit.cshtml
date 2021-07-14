@@ -63,21 +63,21 @@
 
                     
                     <img src="~/fotos/@fotos.Path" alt="" />
-                    <button value="@fotos.Id" name="listaFotosDelete" > APAGAR</button>
+                    
+                    <input type="checkbox" name="listaFotosDelete" value="@fotos.Id"/>
                 }
             </div>
             <div class="form-group">
-                @foreach (var gen in ViewBag.Generos)
+                @foreach (Genero gen in ViewBag.Generos)
                 {
 
                     @if (Model.ListasDeGeneros.Contains(gen))
                     {
-
-                        <input type="checkbox" name="listaGenerosEditados" class="form-control" checked />@gen.Genre<br /><br />
+                        <input type="checkbox" name="listaGenerosEditados" class="form-control" value="@gen.Id" checked />@gen.Genre<br /><br />
                     }
                     else
                     {
-                        <input type="checkbox" name="listaGenerosEditados" class="form-control" />@gen.Genre<br /><br />
+                        <input type="checkbox" name="listaGenerosEditados" class="form-control" value="@gen.Id" />@gen.Genre<br /><br />
                     }
                 }
             </div>
@@ -85,7 +85,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label">Fotografias</label>
-                <input type="file" name="fotografia" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple class="form-control" /><br />
+                <input type="file" name="fotografias" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple class="form-control" /><br />
             </div>
             <div class="form-group">
                 <input type="submit" value="Edit" class="btn btn-primary" />

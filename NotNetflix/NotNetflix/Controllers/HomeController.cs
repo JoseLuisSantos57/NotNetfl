@@ -30,6 +30,7 @@ namespace NotNetflix.Controllers
         {
             string[] headers= { "RECENTES","A ESCOLHA DOS CRÍTICOS", "POR DURAÇÃO" };
             ViewBag.Headers = headers;
+          
             var lista = await _context.Filme.Include(f => f.ListasDeFotografias).ToListAsync();
             return View(lista);
         }

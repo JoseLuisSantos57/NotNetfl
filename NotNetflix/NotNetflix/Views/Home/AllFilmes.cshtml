@@ -28,7 +28,6 @@
                     @if (User.IsInRole("Gestor"))
                     {
                         <a asp-action="Edit" asp-controller="Filmes" asp-route-id="@item.Id">Edit</a>
-                        <a asp-action="Details" asp-controller="Filmes" asp-route-id="@item.Id"> Details </a>
                         <a asp-action="Delete" asp-controller="Filmes" asp-route-id="@item.Id"> Delete </a>
                     }
                 </div>

@@ -12,7 +12,7 @@ using NotNetflix.Data;
 using NotNetflix.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using WMPLib;
+
 
 namespace NotNetflix.Controllers
 {
@@ -177,7 +177,7 @@ namespace NotNetflix.Controllers
                         await _context.SaveChangesAsync();
                         using var play = new FileStream(nomefoto, FileMode.Create);
                         await photo.CopyToAsync(play);
-                        WindowsMediaPlayer
+                        
                     }
                         return RedirectToAction(nameof(Index));
                     }
@@ -220,23 +220,24 @@ namespace NotNetflix.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Titulo,Descricao,Data,Duracao,Rating")] Filme filme, IFormFile filmefile, int[] listaGenerosEditados, List<IFormFile> fotografia, int[]listaFotosDelete)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Titulo,Descricao,Data,Duracao,Rating")] Filme filme, IFormFile filmefile, int[] listaGenerosEditados, IFormFile[] fotografias, int[]listaFotosDelete)
         {
             /*Introduzir os dados novos do filme
              * Receber o ficheiro do filme --> se for igual não altera
+             ***caso seja diferente cria o ficheiro novo,  cria o ficheiro, adiciona à base de dados,  
              * Receber o ficheiro da foto --> se for igual não altera
              * Receber os novos géneros --> se for igual não altera
              * Tratar dos outros dados 
              */
 
+           
+
+
+
+
             //o problema está em associar o id recebido pelo método e o objeto filme recebido
             
-            filme = _context.Filme.Include(g => g.ListasDeGeneros).Include(f => f.ListasDeFotografias).FirstOrDefault(f => f.Id == id);
-
-            if (filme == null)
-            {
-                return NotFound();
-            }
+            //filme = _context.Filme.Include(g => g.ListasDeGeneros).Include(f => f.ListasDeFotografias).FirstOrDefault(f => f.Id == id);
 
 
             //problemas aqui
@@ -273,9 +274,9 @@ namespace NotNetflix.Controllers
                 }
 
                 //verificar as fotografias inseridas e possibilidade de apagar fotos já existentes
-                if(fotografia != null)
+                if(fotografias != null)
                 {
-                    foreach(var foto in fotografia)
+                    foreach(var foto in fotografias)
                     {
                         if(foto.ContentType != "image/jpg" || foto.ContentType != "image/jpeg" || foto.ContentType != "image/png")
                         {
@@ -302,7 +303,7 @@ namespace NotNetflix.Controllers
                         foreach(var foto in _context.Fotografia.Where(f => listaFotosDelete.Contains(f.Id)).ToList())
                         {
                             _context.Fotografia.Remove(foto);
-                            System.IO.File.Delete(Path.Combine(_caminho.WebRootPath, "filmes", foto.Path));
+                            System.IO.File.Delete(Path.Combine(_caminho.WebRootPath, "filmes", foto.Path));//realizar depois de guardar os dados na base de dados
                         }
                     }
                     
@@ -318,7 +319,7 @@ namespace NotNetflix.Controllers
                     //se foram introduzidas novas fotografias
                     if (intrFotos) { 
                         //criar os ficheiros das fotografias
-                        foreach (IFormFile photo in fotografia)
+                        foreach (IFormFile photo in fotografias)
                         {
                             var modelo = new Fotografia();
                             //definir o nome do ficheiro
