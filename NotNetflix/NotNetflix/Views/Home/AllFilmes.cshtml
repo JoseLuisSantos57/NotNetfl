@@ -10,7 +10,7 @@
 <div class="box">
     <div class="head">
         <h2>@ViewBag.Titulo</h2>
-        <p class="text-right"><a asp-action="Index" asp-controller="Home">VOLTAR</a></p>
+        <p class="text-right">@*<a asp-action="Index" asp-controller="Home">VOLTAR</a>*@<a href="javascript:window.history.back();">Back</a></p>
     </div>
     @*Adicionar os filmes, 6 em cada linha por um numero indefinido de linhas(usar ciclo for() )*@
 

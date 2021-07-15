@@ -30,8 +30,9 @@ namespace NotNetflix.Controllers
         {
             string[] headers= { "RECENTES","A ESCOLHA DOS CRÍTICOS", "POR DURAÇÃO" };
             ViewBag.Headers = headers;
-          
+
             var lista = await _context.Filme.Include(f => f.ListasDeFotografias).ToListAsync();
+
             return View(lista);
         }
 
@@ -68,6 +69,8 @@ namespace NotNetflix.Controllers
         {
             //fazer switch case
             //caso o id enviado seja 1 ordena os filmes por data de lançamento
+            //enviar viewbag 
+            var exemplo = _context.Filme.Include(l => l.ListasDeFotografias);
             switch (a)
             {
                 case 1:

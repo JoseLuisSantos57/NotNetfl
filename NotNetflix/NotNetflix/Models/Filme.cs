@@ -46,19 +46,19 @@ namespace NotNetflix.Models
     /// </summary>
     public DateTime Data { get; set; }
 
-    /// <summary>
-    /// Duração do filme
-    /// </summary>
-    //[Required(ErrorMessage = "A duração do filme é de preenchimento obrigatório")]
-    [RegularExpression("[0-9]{1,4}")]
-    [Display(Name = "Duração do filme em minutos")]
-    public double Duracao { get; set; }
+        /// <summary>
+        /// Duração do filme
+        /// </summary>
+        //[Required(ErrorMessage = "A duração do filme é de preenchimento obrigatório")]
+        [RegularExpression("^(1[0-2]|0?[1-9]):([0-5]?[0-9])(●?[AP]M)?$")]
+        [Display(Name = "Duração do filme em minutos")]
+    public string Duracao { get; set; }
 
     /// <summary>
     /// Classificação do filme (conforme o imbd) de 0 a 10
     /// </summary>
    
-    [RegularExpression("[1-9]|(10)")]
+    [RegularExpression("[1-9]|10")]
     public double Rating { get; set;}
 
 

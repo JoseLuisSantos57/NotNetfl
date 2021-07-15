@@ -10,22 +10,14 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <p>Ficheiro do filme atual</p>
-                <video width="320" height="240" controls>
-                    <source src="~/filmes/@Model.Path" type="video/webm">
-
-                    Your browser does not support the video tag. <!-- Text to be shown incase browser doesnt support html5 -->
-                </video>
                 <div class="form-group">
                     <label asp-for="Path" class="control-label"></label>
-                    @*https://en.wikipedia.org/wiki/WebM de modo a conhecer melhor WebM*@
-
-                    @*os ficheiros com extensão webm são reproduzíveis no leitor de vídeo do html5*@
-                    <input type="file" name="filmefile" accept=".webm" style="     color: gainsboro;" />
+                    <input asp-for="Path" class="form-control" />
                     <span asp-validation-for="Path" class="text-danger"></span>
                 </div>
 
@@ -45,6 +37,7 @@
                 <input asp-for="Data" class="form-control" />
                 <span asp-validation-for="Data" class="text-danger"></span>
             </div>
+            @*Duração em minutos*@
             <div class="form-group">
                 <label asp-for="Duracao" class="control-label"></label>
                 <input asp-for="Duracao" class="form-control" />
@@ -55,16 +48,19 @@
                 <input asp-for="Rating" class="form-control" />
                 <span asp-validation-for="Rating" class="text-danger"></span>
             </div>
+            @*Aceitar fotografias novas*@
+            <div>
+                <label class="control-label">Fotografias</label>
+                <input type="file" name="fotografias" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple  class="form-control" />
+            </div>
             <label class="control-label">Fotografias</label>
             <div class="form-group">
-                
+
                 @foreach (var fotos in Model.ListasDeFotografias.OrderBy(i => i.Id))
                 {
-
-                    
                     <img src="~/fotos/@fotos.Path" alt="" />
-                    
-                    <input type="checkbox" name="listaFotosDelete" value="@fotos.Id"/>
+
+                    <input type="checkbox" name="listaFotosDelete" value="@fotos.Id" />
                 }
             </div>
             <div class="form-group">
@@ -73,20 +69,15 @@
 
                     @if (Model.ListasDeGeneros.Contains(gen))
                     {
-                        <input type="checkbox" name="listaGenerosEditados" class="form-control" value="@gen.Id" checked />@gen.Genre<br /><br />
+                        <input type="checkbox" name="listaGenerosEditados" value="@gen.Id" checked />@gen.Genre<br /><br />
                     }
                     else
                     {
-                        <input type="checkbox" name="listaGenerosEditados" class="form-control" value="@gen.Id" />@gen.Genre<br /><br />
+                        <input type="checkbox" name="listaGenerosEditados" class="control-indicator" value="@gen.Id" />@gen.Genre<br /><br />
                     }
                 }
             </div>
-            @*Aceitar fotografias novas*@
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label class="control-label">Fotografias</label>
-                <input type="file" name="fotografias" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple class="form-control" /><br />
-            </div>
+
             <div class="form-group">
                 <input type="submit" value="Edit" class="btn btn-primary" />
             </div>
@@ -95,6 +86,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    @*<a asp-action="Index" asp-controller="Home">Back to Home</a>*@
+    <a href="javascript:window.history.back();">Back</a>
 </div>
 

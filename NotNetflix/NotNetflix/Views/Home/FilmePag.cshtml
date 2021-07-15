@@ -7,9 +7,8 @@
 
 <div>
     <h1>@Model.Titulo</h1>
-    <video width="980" height="735"  controls >
-        <source src="~/filmes/@Model.Path" type="video/webm">
-    </video>
+    
+    <iframe  width="980" height="735" type="text/html" src="@Model.Path" frameborder="0" allowfullscreen></iframe>
     @foreach (var gen in Model.ListasDeGeneros)
     {
         <p>@gen.Genre</p>

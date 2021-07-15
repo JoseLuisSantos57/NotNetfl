@@ -16,60 +16,57 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Path" class="control-label"></label>
-                @*https://en.wikipedia.org/wiki/WebM de modo a conhecer melhor WebM*@
-                
-                @*os ficheiros com extensão webm são reproduzíveis no leitor de vídeo do html5*@
-                <input type="file" name="filmefile" accept=".webm" style="     color: gainsboro;" />
+                <input asp-for="Path" class="form-control" />
                 <span asp-validation-for="Path" class="text-danger"></span>
             </div>
-            
+
             @*Div para adicionar multiplas fotografias do filme*@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label  class="control-label">Fotografias</label>
-                <input type="file" name="fotografia" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple class="form-control" />   
+                <label class="control-label" asp-for="ListasDeFotografias">Fotografias</label>
+                <input type="file" name="fotografia" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple class="form-control" />
             </div>
-
-
             @*Título do filme*@
-            <div class="form-group">
-                <label asp-for="Titulo" class="control-label"></label>
-                <input asp-for="Titulo" class="form-control" />
-                <span asp-validation-for="Titulo" class="text-danger"></span>
-            </div>
+        <div class="form-group">
+            <input asp-for="Titulo" />
+           
+            <label></label>
+            <span asp-validation-for="Titulo" class="text-danger"></span>
+        </div>
             @*Descrição do filme*@
-            <div class="form-group">
-                <label asp-for="Descricao" class="control-label"></label>
-                <span asp-validation-for="Descricao" class="text-danger"></span>
+            <div>
+                <label></label>
+                <span asp-validation-for="Descricao"></span>
                 <textarea asp-for="Descricao" rows="6" cols="50"></textarea>
             </div>
             @*Data de lançamento*@
             <div class="form-group">
-                <label asp-for="Data" class="control-label"></label>
-                <input asp-for="Data" class="form-control" />
+
+                <input asp-for="Data" />
+                <label>Introduza por favor a duração no formato horas:minutos</label>
                 <span asp-validation-for="Data" class="text-danger"></span>
             </div>
             @*Duração em formato a definir *@
             <div class="form-group">
-                <label asp-for="Duracao" class="control-label"></label>
-                <input asp-for="Duracao" class="form-control" />
+                <input asp-for="Duracao" />
+                <label>Duracao</label>
+
                 <span asp-validation-for="Duracao" class="text-danger"></span>
             </div>
             @*rating dos críticos*@
             <div class="form-group">
-                <label asp-for="Rating" class="control-label"></label>
-                <input asp-for="Rating" class="form-control" />
+                <label></label>
+                <input asp-for="Rating" />
                 <span asp-validation-for="Rating" class="text-danger"></span>
             </div>
 
             @foreach (var genero in ViewBag.Generos)
             {
                 <input type="checkbox" name="listaGenerosEscolhidos" value="@genero.Id" /> @genero.Genre<br /><br />
-
             }
 
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn" />
             </div>
         </form>
     </div>
@@ -79,3 +76,6 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
