@@ -50,12 +50,12 @@
             </div>
             @*Aceitar fotografias novas*@
             <div>
-                <label class="control-label">Fotografias</label>
-                <input type="file" name="fotografias" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple  class="form-control" />
+                <label class="control-label">Introduzir novas fotografias</label>
+                <input type="file" name="fotografias" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple  class="form-control" /><br />
             </div>
-            <label class="control-label">Fotografias</label>
+            <label class="control-label">Apagar fotografias</label>
             <div class="form-group">
-
+                
                 @foreach (var fotos in Model.ListasDeFotografias.OrderBy(i => i.Id))
                 {
                     <img src="~/fotos/@fotos.Path" alt="" />
@@ -69,7 +69,7 @@
 
                     @if (Model.ListasDeGeneros.Contains(gen))
                     {
-                        <input type="checkbox" name="listaGenerosEditados" value="@gen.Id" checked />@gen.Genre<br /><br />
+                        <input class="checkB" type="checkbox" name="listaGenerosEditados" value="@gen.Id"  checked />@gen.Genre<br /><br />
                     }
                     else
                     {

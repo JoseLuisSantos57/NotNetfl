@@ -251,11 +251,6 @@ namespace NotNetflix.Controllers
 
                 //flag para verificar se não houve problemas com os dados introduzidos
                 bool correto = true;
-
-                //contador de fotografias para impedir que o filme fique sem fotografias
-
-                //flag para apagar as fotografias selecionadas
-                bool eraseFoto = false;
                 
                 //falg para introduzir as fotografias novas
                 bool newFoto = false;
@@ -277,19 +272,6 @@ namespace NotNetflix.Controllers
                         }
                 }
 
-                ////verificar a existência de novos géneros
-                //if (listaGenerosEditados != null)
-                //{
-                //    var listaGeneros = _context.Genero.Where(g => listaGenerosEditados.Contains(g.Id)).ToList();
-                //    // adicionar esta lista de géneros ao filme
-                //    newFilme.ListasDeGeneros = (ICollection<Genero>)listaGeneros;
-                //}
-                
-                
-                //se algum género foi adicionado ou retirado
-                //é necessário alterar a lista de géneros
-                //associados ao filme
-
                 if(gensAdicionados.Any()|| gensRetirados.Any())
                 {
                     if (gensRetirados.Any())
@@ -308,9 +290,6 @@ namespace NotNetflix.Controllers
                         }
                     }
                 }
-
-
-
 
                 //verificar a validade da data introduzida
                 if (newFilme.Data.CompareTo(DateTime.Now) <= 0)
@@ -335,25 +314,17 @@ namespace NotNetflix.Controllers
                         correto = false;
                 }
 
-                if(listaFotosDelete != null)
-                {
-                    eraseFoto = true;
-                }
 
                 //caso não haja erros com os dados introduzidos
                 if (correto)
                 {
                     //verificar se o número de fotografias != 0
-
-                    
-                    
-                    //nº de fotografias adicionadas
                     if ((filme.ListasDeFotografias.Count() + fotografias.Count()-listaFotosDelete.Count()) <= 0)
                     {
                         //caso o filme deixe de possuir fotografias devolve o controlo à view
                         ModelState.AddModelError("","O Filme tem que possuir pelo menos uma fotografia associada");
                         ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
-                        return View(newFilme);
+                        return View(filme);
                     }
 
 
@@ -368,7 +339,7 @@ namespace NotNetflix.Controllers
                     {
                         ModelState.AddModelError("",o.ToString());
                         ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
-                        return View(newFilme);
+                        return View(filme);
                     }
 
                     //se chegámos aqui o update foi bem sucedido
@@ -404,7 +375,7 @@ namespace NotNetflix.Controllers
                             {
                                 ModelState.AddModelError("", o.ToString());
                                 ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
-                                return View(newFilme);
+                                return View(filme);
                             }
                         }
                     }
@@ -428,7 +399,7 @@ namespace NotNetflix.Controllers
                             catch (Exception o) {
                                 ModelState.AddModelError("","Houve um erro na remoção das fotografias por favor tente outravaz");
                                 ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
-                                return View(newFilme);
+                                return View(filme);
                             }
 
                         }
@@ -441,168 +412,8 @@ namespace NotNetflix.Controllers
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
 
-
-
-
-
-            //o problema está em associar o id recebido pelo método e o objeto filme recebido
-
-            //filme = _context.Filme.Include(g => g.ListasDeGeneros).Include(f => f.ListasDeFotografias).FirstOrDefault(f => f.Id == id);
-
-            /*
-       
-            if (ModelState.IsValid)
-            {
-                //varíavel de controlo para tratar os erros do modelstate
-                bool correto = true;
-
-                //variável de controlo para a introdução de ficheiros
-                bool intrFotos = false;
-
-                //variável de controlo para a introdução de ficheiros
-                bool intrFilme = false;
-
-
-                //verificar a data
-                if (filme.Data.CompareTo(DateTime.Now)>0)
-                {
-                    ModelState.AddModelError("", "Introduza por favor uma data válida");
-                    correto = false;
-                }
-
-                if (filmefile != null)
-                {
-                    if(filmefile.ContentType != "video/webm")
-                    {
-                        ModelState.AddModelError("", "Adicione um ficheiro de vídeo válido");
-                        correto = false;
-                    }
-                    else
-                    {
-                        intrFilme = true;
-                    }
-                }
-
-                //verificar as fotografias inseridas e possibilidade de apagar fotos já existentes
-                if(fotografias != null)
-                {
-                    foreach(var foto in fotografias)
-                    {
-                        if(foto.ContentType != "image/jpg" || foto.ContentType != "image/jpeg" || foto.ContentType != "image/png")
-                        {
-                            ModelState.AddModelError("", "Adicione um ficheiro de imagem válido por favor");
-                            correto = false;
-                        }
-                        else
-                        {
-                            intrFotos = true; 
-                        }
-                    }
-                }
-                
-
-                //se os dados introduzidos forem válidos altera os dados da base de dados
-                if (correto)
-                {
-                    string nomeFoto = "";
-
-                    string nomeFilme = ""; 
-                    //tratar as fotos a apagar 
-                    if(listaFotosDelete != null)
-                    {
-                        foreach(var foto in _context.Fotografia.Where(f => listaFotosDelete.Contains(f.Id)).ToList())
-                        {
-                            _context.Fotografia.Remove(foto);
-                            System.IO.File.Delete(Path.Combine(_caminho.WebRootPath, "filmes", foto.Path));//realizar depois de guardar os dados na base de dados
-                        }
-                    }
-                    
-                    if (listaGenerosEditados != null)
-                    {
-                        //adicionar as géneros escolhidos à lista
-                        // foram escolhidos géneros
-                        var listaGeneros = _context.Genero.Where(g => listaGenerosEditados.Contains(g.Id)).ToList();
-                        // adicionar esta lista de géneros ao filme
-                        filme.ListasDeGeneros = (ICollection<Genero>)listaGeneros;
-                    }
-
-                    //se foram introduzidas novas fotografias
-                    if (intrFotos) { 
-                        //criar os ficheiros das fotografias
-                        foreach (IFormFile photo in fotografias)
-                        {
-                            var modelo = new Fotografia();
-                            //definir o nome do ficheiro
-                            Guid a;
-                            a = Guid.NewGuid();
-                            nomeFoto = filme.Titulo + "_" + a.ToString();
-
-                            //determinar a expressão do nome do filme
-                            nomeFoto = nomeFoto + Path.GetExtension(photo.FileName).ToLower();
-
-                            modelo.Path = nomeFoto;
-                            nomeFoto = Path.Combine(_caminho.WebRootPath, "fotos", nomeFoto);
-                            modelo.FilmeFK = filme.Id;
-                            try
-                            {
-                                _context.Add(modelo);
-                                await _context.SaveChangesAsync();
-                                using var play = new FileStream(nomeFoto, FileMode.Create);
-                                await photo.CopyToAsync(play);
-                            }
-                            catch(Exception o)
-                            {
-
-                            }
-                        }
-                    }
-                    //caso o filme tenha sido alterado vamos criar o ficheiro e alterar na base de dados
-                    if (intrFilme)
-                    {
-                        //definir o nome do ficheiro
-                        Guid g;
-                        g = Guid.NewGuid();
-
-                        nomeFilme = filme.Titulo + "_" + g.ToString();
-
-                        //determinar a expressão do nome do filme
-
-                        nomeFilme = nomeFilme + Path.GetExtension(filmefile.FileName).ToLower();
-
-                        filme.Path = nomeFilme;
-                        nomeFilme = Path.Combine(_caminho.WebRootPath, "filmes", nomeFilme);
-                    }
-                
-
-
-                    //alterar os dados na base de dados
-                    try
-                    {
-                        //dá update ao filme
-                        _context.Update(filme);
-                        
-                        //guarda as alterações 
-                        await _context.SaveChangesAsync();
-                        
-                        //verifica se se alterou o ficheiro do filme
-                        if (intrFilme) {
-                            using var play = new FileStream(nomeFilme, FileMode.Create);
-                            //cria o ficheiro
-                            await filmefile.CopyToAsync(play);
-                        }
-                    }
-                    catch(DbUpdateConcurrencyException)
-                    {
-
-                    }
-
-                    //se cheguei até aqui envio de volta para o index
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-            */
             ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
-            return View(newFilme);
+            return View(filme);
         }
         // GET: Filmes/Delete/5
         public async Task<IActionResult> Delete(int? id)

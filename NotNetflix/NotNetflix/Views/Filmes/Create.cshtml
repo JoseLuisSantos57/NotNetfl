@@ -24,6 +24,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label" asp-for="ListasDeFotografias">Ficheiros das Fotografias do filme</label><br />
+                <label class="control-label">Sendo que o primeiro ficheiro inserido é a capa do filme</label><br />
                 <input type="file" name="fotografia" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple class="form-control" />
                 <span asp-validation-for="Path" class="text-danger"></span>
             </div>
@@ -36,7 +37,7 @@
         </div>
             @*Descrição do filme*@
             <div>
-                <label asp-for="Descricao"></label><br />
+                <label asp-for="Descricao" class="control-label"></label><br />
                 <textarea asp-for="Descricao" rows="3" cols="50" class="form-control" placeholder="Insira a descrição aqui"></textarea>
                 <span asp-validation-for="Descricao"></span>
             </div>
@@ -48,20 +49,20 @@
             </div>
             @*Duração em formato a definir *@
             <div class="form-group">
-                <label>Duração (no formato horas:minutos)</label><br />
+                <label class="control-label">Duração (no formato horas:minutos)</label><br />
                 <input asp-for="Duracao" placeholder="ex.1:20 --> 1 e 20 minutos" class="form-control"/>
                 <span asp-validation-for="Duracao" class="text-danger" ></span>
             </div>
             @*rating dos críticos*@
             <div class="form-group">
-                <label asp-for="Rating"></label><br />
+                <label asp-for="Rating" class="control-label"></label><br />
                 <input asp-for="Rating" placeholder="ex. 1-10" class="form-control"/>
                 <span asp-validation-for="Rating" class="text-danger"></span>
             </div>
-
+            <label class="control-label">Géneros:</label><br />
             @foreach (var genero in ViewBag.Generos)
             {
-                <input type="checkbox" name="listaGenerosEscolhidos" value="@genero.Id" /> @genero.Genre<br /><br />
+                <input type="checkbox" name="listaGenerosEscolhidos" value="@genero.Id" /> <label class="control-label">@genero.Genre</label><br /><br />
             }
 
             <div class="form-group">

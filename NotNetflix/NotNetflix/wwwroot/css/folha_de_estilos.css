@@ -1658,3 +1658,6 @@ textarea.form-control-lg {
     padding-right:30px;
 
 }
+.control-label{
+    font-size:medium;
+}

@@ -108,7 +108,7 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
       /// <summary>
       /// método a ser executado pela página, quando o HTTP é invocado em POST
       ///    - criar um novo Utilizador
-      ///    - registar os dados pessoais do criador
+      ///    - registar os dados pessoais do Utilizador
       /// </summary>
       /// <param name="returnUrl">link para redirecionar o utilizador, se fornecido</param>
       /// <returns></returns>
@@ -129,13 +129,18 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
          // Se os dados forem validados pela classe 'InputModel'
          if (ModelState.IsValid) {
 
+
+                //DateTime plano = new DateTime(DateTime.Now.Day ,); 
+
+
             // criar um objeto do tipo 'ApplicationUser'
             var user = new ApplicationUser {
                UserName = Input.Email, // username
                Email = Input.Email,    // email do utilizador
                EmailConfirmed = true, // o email não está formalmente confirmado
                LockoutEnabled = false,  // o utilizador pode ser bloqueado
-               LockoutEnd = new DateTime(DateTime.Now.Day + 1, 1, 1),  // data em que termina o bloqueio,
+               
+                LockoutEnd = new DateTime(DateTime.Now.Day + 1, 1, 1),  // data em que termina o bloqueio,
                                                                          // se não for anulado antes
                DataRegisto = DateTime.Now // data do registo
             };

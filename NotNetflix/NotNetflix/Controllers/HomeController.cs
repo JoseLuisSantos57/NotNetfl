@@ -78,8 +78,6 @@ namespace NotNetflix.Controllers
              From fotografia, filme
             where fotoFK = filme.id */
 
-            
-
             switch (a)
             {
                 case 1:
