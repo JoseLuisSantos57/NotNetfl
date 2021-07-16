@@ -65,7 +65,7 @@
     <div class="head">
         <h2>RECENTES</h2>
         
-        <p class="text-right"><a href="javascript:window.history.back();">VOLTAR</a>@*<a asp-action="AllFilmes" asp-controller="Home" asp-route-a="1">See all</a>*@</p>
+        <p class="text-right"><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="1">See all</a>@*<a asp-action="AllFilmes" asp-controller="Home" asp-route-a="1">See all</a>*@</p>
     </div>
 
     @foreach (var item in Model.OrderByDescending(d => d.Data).Take(6))@*Trazer a lista do controller através de viewbag*@
@@ -155,5 +155,5 @@
             </div>
         </div>
     }
-
+    <div class="cl">&nbsp;</div>
 </div>

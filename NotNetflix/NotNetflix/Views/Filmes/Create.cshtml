@@ -15,48 +15,47 @@
         <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Path" class="control-label"></label>
-                <input asp-for="Path" class="form-control" />
+                <label asp-for="Path" class="control-label"></label><br />
+                <input class="form-control" asp-for="Path" placeholder="ex. https://www.youtube.com/embebed..."/>
                 <span asp-validation-for="Path" class="text-danger"></span>
             </div>
 
             @*Div para adicionar multiplas fotografias do filme*@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label class="control-label" asp-for="ListasDeFotografias">Fotografias</label>
+                <label class="control-label" asp-for="ListasDeFotografias">Ficheiros das Fotografias do filme</label><br />
                 <input type="file" name="fotografia" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple class="form-control" />
+                <span asp-validation-for="Path" class="text-danger"></span>
             </div>
             @*Título do filme*@
         <div class="form-group">
-            <input asp-for="Titulo" />
-           
-            <label></label>
+            <label asp-for="Titulo" class="control-label"></label><br />
+            <input asp-for="Titulo" class="form-control" />
+            
             <span asp-validation-for="Titulo" class="text-danger"></span>
         </div>
             @*Descrição do filme*@
             <div>
-                <label></label>
+                <label asp-for="Descricao"></label><br />
+                <textarea asp-for="Descricao" rows="3" cols="50" class="form-control" placeholder="Insira a descrição aqui"></textarea>
                 <span asp-validation-for="Descricao"></span>
-                <textarea asp-for="Descricao" rows="6" cols="50"></textarea>
             </div>
             @*Data de lançamento*@
             <div class="form-group">
-
-                <input asp-for="Data" />
-                <label>Introduza por favor a duração no formato horas:minutos</label>
+                <label class="control-label">Introduza por favor a duração no formato horas:minutos</label><br />
+                <input asp-for="Data"class="form-control" />
                 <span asp-validation-for="Data" class="text-danger"></span>
             </div>
             @*Duração em formato a definir *@
             <div class="form-group">
-                <input asp-for="Duracao" />
-                <label>Duracao</label>
-
-                <span asp-validation-for="Duracao" class="text-danger"></span>
+                <label>Duração (no formato horas:minutos)</label><br />
+                <input asp-for="Duracao" placeholder="ex.1:20 --> 1 e 20 minutos" class="form-control"/>
+                <span asp-validation-for="Duracao" class="text-danger" ></span>
             </div>
             @*rating dos críticos*@
             <div class="form-group">
-                <label></label>
-                <input asp-for="Rating" />
+                <label asp-for="Rating"></label><br />
+                <input asp-for="Rating" placeholder="ex. 1-10" class="form-control"/>
                 <span asp-validation-for="Rating" class="text-danger"></span>
             </div>
 
@@ -73,7 +72,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" asp-controller="Home">Home</a>
 </div>
 
 @section Scripts {

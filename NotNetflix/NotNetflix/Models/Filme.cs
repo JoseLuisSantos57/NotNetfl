@@ -58,7 +58,7 @@ namespace NotNetflix.Models
     /// Classificação do filme (conforme o imbd) de 0 a 10
     /// </summary>
    
-    [RegularExpression("[1-9]|10")]
+    [RegularExpression("^[1-9]|10")]
     public double Rating { get; set;}
 
 

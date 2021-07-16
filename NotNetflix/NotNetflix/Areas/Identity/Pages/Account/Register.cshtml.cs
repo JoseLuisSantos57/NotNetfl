@@ -77,11 +77,11 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
 
          [Required]
          [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-        // [DataType(DataType.Password)]
+         [DataType(DataType.Password)]
          [Display(Name = "Password")]
          public string Password { get; set; }
 
-         //[DataType(DataType.Password)]
+         [DataType(DataType.Password)]
          [Display(Name = "Confirm password")]
          [Compare("Password", ErrorMessage = "A password e a sua confirmação não correspondem.")]
          public string ConfirmPassword { get; set; }
@@ -149,8 +149,11 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
 
                     //Para a criação do gestor vai verificar se o email é o seguinte
                     //if (Input.User.Email.CompareTo("gestor@gmail.com") == 0) { 
-                            await _userManager.AddToRoleAsync(user, "Utilizador");
-                        Input.User.Email = Input.Email; // atribuir ao objeto 'criador' o email fornecido pelo utilizador,
+
+                    if (Input.Email.EndsWith("@notnetflix.pt")) {   
+                     await _userManager.AddToRoleAsync(user, "Utilizador");
+                    } 
+                    Input.User.Email = Input.Email; // atribuir ao objeto 'criador' o email fornecido pelo utilizador,
                                                         // a quando da escreita dos dados na interface
                                                         // exatamente a mesma tarefa feita na linha 128
 
@@ -183,9 +186,9 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
                try {
                   _context.Add(Input.User); // adicionar o Criador
                   await _context.SaveChangesAsync(); // 'commit' da adição
-                  // Enviar para o utilizador para a página de confirmação da criaçao de Registo
-                  return RedirectToPage("RegisterConfirmantion");
-               }
+                                                     // Enviar para o utilizador para a página de confirmação da criaçao de Registo
+                  return RedirectToAction("Login","Identity", new { area = "" });
+                    }
                catch (Exception) {
                   // houve um erro na criação dos dados do Criador
                   // Mas, o USER já foi criado na BD

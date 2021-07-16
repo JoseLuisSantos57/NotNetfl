@@ -94,7 +94,13 @@ namespace NotNetflix.Controllers
                 case 4:
                 if (!String.IsNullOrEmpty(s))
                     {
+                       
                         var pesquisa = await _context.Filme.Include(l => l.ListasDeFotografias).Where(n => n.Titulo.Contains(s)).ToListAsync();
+                        if (pesquisa.Count()==0)
+                        {
+                            ViewBag.Titulo = "RESULTADO NÃO ENCONTRADO";
+                            return View(exemplo);
+                        }
                         ViewBag.Titulo = "RESULTADO DA PESQUISA";
                         return View(pesquisa);
                     }

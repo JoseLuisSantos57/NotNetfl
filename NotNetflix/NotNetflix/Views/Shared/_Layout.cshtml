@@ -8,11 +8,12 @@
 <head>
     <title>MovieHunter</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  
 
-    <link href="~/css/folha_de_estilos.css" rel="stylesheet" media="all"/>
+
     <script src="~/js/jquery-func.js"></script>
     <script src="~/js/jquery_1.4.2.js"></script>
+    <!--<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />-->
+    <link href="~/css/folha_de_estilos.css" rel="stylesheet" />
     <!--[if IE 6]><link rel="stylesheet" href="css/ie6.css" type="text/css" media="all" /><![endif]-->
 </head>
 <body>
@@ -31,11 +32,12 @@
             </div>
             <div id="navigation">
                 <ul>
-                    <li><a class="active" asp-action="Index" asp-controller="Home">HOME</a></li>
-                    <li><a href="#">NEWS</a></li>
-                    @if (User.IsInRole("Gestor")) { 
-                    <li><a asp-action="Create" asp-controller="Filmes">CREATE</a></li>
-                    <li><a asp-action="Index" asp-controller="Filmes">INDEX</a></li>
+                    <li><a class="active" asp-action="Index" asp-controller="Home">PÁGINA INICIAL</a></li>
+                    
+                    @if (User.IsInRole("Gestor"))
+                    {
+                        <li><a asp-action="Index" asp-controller="Utilizadores">GERIR UTILIZADORES</a></li>
+                        <li><a asp-action="Create" asp-controller="Filmes">CRIAR FILMES</a></li>
                     }
                     @if (SignInManager.IsSignedIn(User))
                     {
@@ -55,13 +57,13 @@
                     @*Atenção aqui*@
                     <li><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="1">MOST RECENT MOVIE</a></li>
                     <li><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="2">TOP RATED</a></li>
-                    
+
                 </ul>
                 <div id="search">
                     <form method="get" asp-action="AllFilmes" asp-controller="Home" accept-charset="utf-8">
                         <label for="search-field">SEARCH</label>
                         <input type="hidden" name="a" value="4" />
-                        <input type="text" name="s" id="search-field" class="blink search-field" />
+                        <input type="text" name="s" id="search-field" class="blink search-field" placeholder="Título do filme"/>
                         <input type="submit" value="GO!" class="search-button" />
                     </form>
                 </div>
@@ -86,5 +88,8 @@
     </div>
     @await RenderSectionAsync("Scripts", required: false)
     <!-- END PAGE SOURCE -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 </body>
 </html>

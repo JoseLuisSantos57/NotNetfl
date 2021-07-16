@@ -1,7 +1,7 @@
 ﻿@page
 @model RegisterModel
 @{
-   ViewData["Title"] = "Registar";
+   ViewData["Title"] = "Criar uma conta nova";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -11,11 +11,9 @@
 
 
 
-   <div class="row">
+   <div class="box">
       @*<form asp-route-returnUrl="@Model.ReturnUrl" method="post">*@
       <div class="col-md-4">
-
-         <h4>Criar uma nova conta.</h4>
          <hr />
          <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -34,12 +32,12 @@
             <input asp-for="Input.ConfirmPassword" class="form-control" />
             <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
          </div>
-         <button type="submit" class="btn btn-primary">Registar</button>
+         
 
       </div>
       <div class="col-md-6 col-md-offset-2">
          @* Pedir ao novo utilizador que preencha os dados do utilizador *@
-         <h4>Recolha dos Dados do Criador</h4>
+         <h4>Dados do Utilizador</h4>
          <hr />
          <div class="form-group">
             <label asp-for="Input.User. Nome" class="control-label"></label>
@@ -55,6 +53,7 @@
 
       </div>
    </div>
+    <button type="submit" class="btn btn-primary">Registar</button>
 </form>
 
 
