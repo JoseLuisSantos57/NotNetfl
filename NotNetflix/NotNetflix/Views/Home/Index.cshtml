@@ -65,35 +65,32 @@
     <div class="head">
         <h2>RECENTES</h2>
         
-        <p class="text-right"><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="1">See all</a>@*<a asp-action="AllFilmes" asp-controller="Home" asp-route-a="1">See all</a>*@</p>
+        <p class="text-right"><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="1">Ver mais</a>@*<a asp-action="AllFilmes" asp-controller="Home" asp-route-a="1">See all</a>*@</p>
     </div>
 
     @foreach (var item in Model.OrderByDescending(d => d.Data).Take(6))@*Trazer a lista do controller através de viewbag*@
     {
-
-
+                
         <div class="movie">
-            @if (User.Identity.IsAuthenticated)
-            {
-                <div class="movie-image">
-                    <span class="play"><span class="@item.Titulo."></span></span>
+            
+            <div class="movie-image">
+                <span class="play"><span class="@item.Titulo."></span></span>
+
+                @if (User.Identity.IsAuthenticated)
+                {
 
                     <a asp-action="FilmePag" asp-route-id="@item.Id">
-                        <img src="~/fotos/@item.ListasDeFotografias.Min(f => f.Path)" alt="" />
+                        <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
                     </a>
-                </div>
-
-            }
-            else
-            {
-                <div class="movie-image">
-                    <span class="play"><span class="@item.Titulo."></span></span>
-
+                }
+                else
+                {
                     <a asp-area="Identity" asp-page="/Account/Login">
-                        <img src="~/fotos/@item.ListasDeFotografias.Min(f => f.Path)" alt="" />
+                        <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
                     </a>
+                }
+
                 </div>
-            }
             <div class="rating">
                 <p>RATING @item.Rating/10</p><br />
                 <p>Ano : @item.Data.Year</p><br />
@@ -112,17 +109,33 @@
 <div class="box">
     <div class="head">
         <h2>A ESCOLHA DOS CRÍTICOS</h2>
-        <p class="text-right"><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="2">See all</a></p>
+        <p class="text-right"><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="2">Ver mais</a></p>
     </div>
 
     @foreach (var item in Model.OrderByDescending(r => r.Rating).Take(6))
     {
         <div class="movie">                                                                                                                                     @*Select path from lista ,(select min(id) from lista) as tbl where lista.id=tbl.id *@                
-            <div class="movie-image"> <span class="play"><span class="name"></span></span> <a asp-action="FilmePag" asp-route-id="@item.Id"><img src="~/fotos/@item.ListasDeFotografias.Min(p => p.Path)" alt="" /></a> </div>
+            <div class="movie-image">
+
+                @if (User.Identity.IsAuthenticated)
+                {
+
+                    <a asp-action="FilmePag" asp-route-id="@item.Id">
+                        <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-page="/Account/Login">
+                        <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
+                    </a>
+                }
+
+            </div>
             <div class="rating">
                 <p>RATING @item.Rating/10</p><br />
                 <p>Ano : @item.Data.Year</p><br />
-                <p>Duracao : @item.Duracao</p>
+                <p>Duracao : @item.Duracao</p><br />
                 @if (User.IsInRole("Gestor"))
                 {
                     <a asp-action="Edit" asp-controller="Filmes" asp-route-id="@item.Id">Edit</a>
@@ -136,17 +149,31 @@
 <div class="box">
     <div class="head">
         <h2>POR DURAÇÃO</h2>
-        <p class="text-right"><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="3">See all</a></p>
+        <p class="text-right"><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="3">Ver mais</a></p>
     </div>
 
     @foreach (var item in Model.OrderByDescending(d => d.Duracao).Take(6))
     {
         <div class="movie">
-            <div class="movie-image"> <span class="play"><span class="name"></span></span> <a asp-action="FilmePag" asp-route-id="@item.Id"><img src="~/fotos/@item.ListasDeFotografias.Min(p => p.Path)" alt="" /></a> </div>
+            <div class="movie-image">
+            @if (User.Identity.IsAuthenticated)
+            {
+
+                <a asp-action="FilmePag" asp-route-id="@item.Id">
+                    <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
+                </a>
+            }
+            else
+            {
+                <a asp-area="Identity" asp-page="/Account/Login">
+                    <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
+                </a>
+            }
+        </div>
             <div class="rating">
                 <p>RATING @item.Rating/10</p><br />
                 <p>Ano : @item.Data.Year</p><br />
-                <p>Duracao : @item.Duracao</p>
+                <p>Duracao : @item.Duracao</p><br />
                 @if (User.IsInRole("Gestor"))
                 {
                     <a asp-action="Edit" asp-controller="Filmes" asp-route-id="@item.Id">Edit</a>

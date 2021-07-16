@@ -71,6 +71,15 @@ namespace NotNetflix.Controllers
             //caso o id enviado seja 1 ordena os filmes por data de lançamento
             //enviar viewbag 
             var exemplo = _context.Filme.Include(l => l.ListasDeFotografias);
+
+
+            //procurar no filme selecionado a fotografia da capa 
+            /*Select min(Path)
+             From fotografia, filme
+            where fotoFK = filme.id */
+
+            
+
             switch (a)
             {
                 case 1:
@@ -86,7 +95,9 @@ namespace NotNetflix.Controllers
                     
 
                 case 3:
+                
                 var filmesDur = await _context.Filme.OrderBy(i => i.Duracao).Include(l => l.ListasDeFotografias).ToListAsync();
+                
                 ViewBag.Titulo = "FILMES MAIS LONGOS";
                 return View(filmesDur);
                 

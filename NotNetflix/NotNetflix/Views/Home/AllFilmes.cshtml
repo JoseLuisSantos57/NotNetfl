@@ -21,7 +21,7 @@
         @if (User.Identity.IsAuthenticated)
         {
             <div class="movie">
-                <div class="movie-image"> <span class="play"><span class="name"></span></span> <a asp-action="FilmePag" asp-route-id="@item.Id"><img src="~/fotos/@item.ListasDeFotografias.Min(f => f.Path)" alt="" /></a> </div>
+                <div class="movie-image"> <span class="play"><span class="name"></span></span> <a asp-action="FilmePag" asp-route-id="@item.Id"><img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" /></a> </div>
                 <div class="rating">
                     <p>RATING @item.Rating/10</p><br />
                     <p>Data : @item.Data.Year</p><br />

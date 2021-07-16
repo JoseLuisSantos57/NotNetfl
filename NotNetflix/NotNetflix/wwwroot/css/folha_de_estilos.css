@@ -680,7 +680,7 @@ h1#logo {
         left: calc(-2.25rem + 2px);
         width: calc(1rem - 4px);
         height: calc(1rem - 4px);
-        background-color: #adb5bd;
+        background-color: #a69595;
         border-radius: 0.5rem;
         transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-transform 0.15s ease-in-out;
         transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -1605,4 +1605,56 @@ textarea.form-control-lg {
     .gy-md-5 {
         --bs-gutter-y: 3rem;
     }
+}
+.iframe-container {
+    text-align: center;
+    width: 100%;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.cabecalho {
+    padding-top: 20px;
+    text-align: center;
+    text-shadow: 1px 1px 0px #d1d1d1;
+    padding-bottom: 15px;
+   
+}
+
+
+
+.parent {
+    width: 980px;
+    padding-bottom:10px;
+    margin: 3px 0px 20px 0px;
+    border-top: dashed;
+    border-bottom:dashed;
+    border-color: #909190;
+    display:flex;
+    justify-content:center;
+}
+
+.filho.gen{
+    width:120px;
+    padding-left:20px;
+    text-align:left;
+    height:inherit;
+    padding-top:10px;
+}
+
+.filho.desc {
+    width: 860px;
+    height: inherit;
+    padding-left: 20px;
+    padding-top: 10px;
+}
+.gens{
+    padding-top:10px;
+    list-style-type:circle;
+    vertical-align:middle;
+  
+}
+.imagem{
+    padding-right:30px;
+
 }
