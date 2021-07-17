@@ -30,13 +30,14 @@ namespace NotNetflix.Models
     /// <summary>
     /// Titulo do filme
     /// </summary>
-    //[Required]
+    [Required]
     [StringLength(50, ErrorMessage = "O {0} não pode ter mais de {1} carateres." )]
     public string Titulo { get; set; }
 
     /// <summary>
     /// Resumo do filme
     /// </summary>
+    [Required]
     [StringLength(300, ErrorMessage = "O {0} não pode ter mais de {1} carateres.")]
     [Display(Name = "Descrição do filme")]
     public string Descricao { get; set; }
@@ -44,21 +45,26 @@ namespace NotNetflix.Models
     /// <summary>
     /// Data de lançamento do filme
     /// </summary>
+    [Required]
     public DateTime Data { get; set; }
 
         /// <summary>
         /// Duração do filme
         /// </summary>
         //[Required(ErrorMessage = "A duração do filme é de preenchimento obrigatório")]
-        [RegularExpression("^(1[0-2]|0?[1-9]):([0-5]?[0-9])(●?[AP]M)?$")]
+        //[RegularExpression("^(1[0-2]|0?[1-9]):([0-5]?[0-9])(●?[AP]M)?$")]
         [Display(Name = "Duração do filme em minutos")]
-    public string Duracao { get; set; }
+        public double Duracao { get; set; }
 
-    /// <summary>
-    /// Classificação do filme (conforme o imbd) de 0 a 10
-    /// </summary>
-   
-    [RegularExpression("^[1-9]|10")]
+
+        ////tempo do filme
+        //public TimeSpan Tempo { get; set; }
+
+        /// <summary>
+        /// Classificação do filme (conforme o imbd) de 0 a 10
+        /// </summary>
+        [Required]
+    [RegularExpression("^[1-9]$|^(10)$")]
     public double Rating { get; set;}
 
 

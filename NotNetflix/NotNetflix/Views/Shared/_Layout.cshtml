@@ -41,7 +41,7 @@
                     }
                     @if (SignInManager.IsSignedIn(User))
                     {
-                        <li><a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Olá @User.Identity.Name!</a> @* User.Identity.Name --> devolve o UserName  *@</li>
+                        <li><a asp-action="Details" asp-controller="Utilizadores"  asp-route-userName="@User.Identity.Name" title="Manage">Olá @User.Identity.Name!</a> @* User.Identity.Name --> devolve o UserName  *@</li>
                         <li><a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">SAIR</a></li>
                     }
                     else

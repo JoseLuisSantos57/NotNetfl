@@ -94,7 +94,6 @@
             <div class="rating">
                 <p>RATING @item.Rating/10</p><br />
                 <p>Ano : @item.Data.Year</p><br />
-                <p>Duracao : @item.Duracao</p><br />
                 @if (User.IsInRole("Gestor"))
                 {
                     <a asp-action="Edit" asp-controller="Filmes" asp-route-id="@item.Id">Edit</a>

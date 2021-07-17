@@ -16,7 +16,8 @@ using System.Net;
 
 namespace NotNetflix.Controllers
 {
-    [Authorize(Roles = "Gestor")] // esta 'anotação' garante que só as pessoas autenticadas têm acesso aos recursos
+    // esta 'anotação' garante que só as pessoas autenticadas com o role de gestor têm acesso aos recursos
+    [Authorize(Roles = "Gestor")] 
     public class FilmesController : Controller
     {
 
@@ -25,12 +26,17 @@ namespace NotNetflix.Controllers
         /// </summary>
         private readonly NotNetflixDataBase _context;
 
+        /// <summary>
+        /// este atributo contém os dados da app web no servidor
+        /// </summary>
         private readonly IWebHostEnvironment _caminho;
+        
         /// <summary>
         /// Atributo que irá receber todos os dados referentes à pessoa que se autenticou no sistema
         /// </summary>
         private readonly UserManager<ApplicationUser> _userManager;
-        //private ListarFotosViewModel<List>
+        
+        
         public FilmesController(NotNetflixDataBase context, IWebHostEnvironment caminho, UserManager<ApplicationUser> userManager)
         {
             _context = context;
@@ -40,12 +46,14 @@ namespace NotNetflix.Controllers
         }
 
         // GET: Filmes/Create
+        /// <summary>
+        /// invoca, na primeira vez, a View com os dados de criação de uma fotografia
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Create()
         {
-
+            //transporta para a view a lista dos géneros
             ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
-            //var listaFilmes = await _context.Filme.Include(f => f.ListasDeFotografias).Include(f => f.ListasDeGeneros).ToListAsync();
-
             return View();
         }
 
@@ -54,29 +62,39 @@ namespace NotNetflix.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Path,Titulo,Data,Duracao,Rating,Descricao")] Filme filme, int[] listaGenerosEscolhidos, List<IFormFile> fotografia)
+        public async Task<IActionResult> Create([Bind("Path,Titulo,Data,Duracao,Rating,Descricao")] Filme filme, int[] listaGenerosEscolhidos, List<IFormFile> fotografia, double tempo)
         {
-            //var auxiliar
+            //variável que controla a validade dos dados introduzidos
             bool correto = true;
                 
             if (ModelState.IsValid)
                 {   
 
+                //Verificar se a data de estreia é válida
                 if (DateTime.Compare(filme.Data, DateTime.Now) > 0)
                 {
                     ModelState.AddModelError("", "A data introduzida não é válida, porque é posterior à data atual");
                     correto = false;
                 }
 
+                //Verifica se foram selecionados alguns géneros
                 if (listaGenerosEscolhidos.Count() != 0)
                 {
-                    // foram escolhidos géneros
+                 
                     var listaGeneros = _context.Genero.Where(g => listaGenerosEscolhidos.Contains(g.Id)).ToList();
                     // adicionar esta lista de géneros ao filme
                     filme.ListasDeGeneros = (ICollection<Genero>)listaGeneros;
                 }
-                
-                /* processar o ficheiro
+
+                //verificar se existe um path para o filme e se este tem o formato pretendido
+                if (filme.Path == null || filme.Path.Contains("youtube.com/embed/") == false)
+                {
+                    //apresentar mensagem a pedir o ficheiro
+                    ModelState.AddModelError("", "Adicione por favor um link para o filme");
+                    correto = false;
+
+                }
+                 /* processar o ficheiro
                  *   - existe ficheiro?
                  *     - se não existe, o q fazer?  => gerar uma msg erro, e devolver controlo à View
                  *     - se continuo, é pq ficheiro existe
@@ -89,57 +107,37 @@ namespace NotNetflix.Controllers
                  *           - se não  => gerar uma msg erro, e devolver controlo à View
                 */
          
-         
-
-                //verificar se existe ficheiro
-                if (filme.Path == null)
-                {
-                    //apresentar mensagem a pedir o ficheiro
-                    ModelState.AddModelError("", "Adicione por favor o ficheiro do filme");
-
-                    correto = false;
-                    
-                }
-                else //existe ficheiro
-                {
-                    HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(filme.Path);
-                    request.Method = "HEAD";
-                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                    {
-                        if (!response.ResponseUri.ToString().Contains("youtube.com/embed/"))
-                        {
-                            ModelState.AddModelError("", "Insira um link válido por favor");
-                            correto = false;
-                        }
-                    }
-                }
-
                 //adcionar fotografia
                 string nomefoto = " ";
+                //verifica se o formato dos ficheiros introduzidos é válido 
                 foreach (IFormFile photo in fotografia) {
                     if (fotografia == null && (photo.ContentType != "image/jpg" || photo.ContentType != "image/jpeg" || photo.ContentType != "image/png"))
                     {
+                        //se chegou aqui não são válidos
                         ModelState.AddModelError("", "Adicione um ficheiro válido de imagem");
                         correto = false;
 
                     } 
                 }
+
+                //verificar se ocorreram erros
                 if (correto)
                 {
-                    //criar array com as fotografias a criar 
-                    List<FileStream> criadorFiles = new List<FileStream>();
+
                     try
                     {
-                        //problemas aqui
+                        //introduzir os dados no filme na base de dados
                         _context.Add(filme);
+                        //guardar os novos dados
                         await _context.SaveChangesAsync(); 
                         
-                  
+                        
                         foreach (IFormFile photo in fotografia)
                         {
-                         var modelo = new Fotografia();
-                         //definir o nome do ficheiro
-                         Guid a;
+                        //criação de uma nova fotografia
+                        Fotografia modelo = new Fotografia();
+                        //definir o nome do ficheiro
+                        Guid a;
                         a = Guid.NewGuid();
                         nomefoto = filme.Titulo + "_" + a.ToString();
 
@@ -148,19 +146,24 @@ namespace NotNetflix.Controllers
 
                         nomefoto = nomefoto + extensao;
                         
+                        //Acresentar o Path definido à fotografia
                         modelo.Path = nomefoto;
                         nomefoto = Path.Combine(_caminho.WebRootPath, "fotos", nomefoto);
+                        //Criar a referência entre a fotografia e o filme
                         modelo.FilmeFK = filme.Id;
-                        _context.Add(modelo);
-                        await _context.SaveChangesAsync();
-                            using var play = new FileStream(nomefoto, FileMode.Create);
+                        using var play = new FileStream(nomefoto, FileMode.Create);
+                        //guarda os ficheiros no disco rígido
                         await photo.CopyToAsync(play);
-                          
+                        //se cheguei aqui a adição dos ficheiros das fotografias foi bem sucedida
+                        //adicionar a fotografia à base de dados
+                        _context.Add(modelo);
+                        await _context.SaveChangesAsync(); 
                     }
                         return RedirectToAction("Index", "Home", new { area = "" });
                     }
                     catch (Exception o)
                     {
+                        //se chegou aqui introdução das fotografias na base de dados não foi bem sucedida   
                         ModelState.AddModelError("", o.GetBaseException().ToString());
                         ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
                         return View(filme);
@@ -173,9 +176,7 @@ namespace NotNetflix.Controllers
             return View(filme);
         }
         
-        
-        
-        
+                
         // GET: Filmes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -195,6 +196,7 @@ namespace NotNetflix.Controllers
 
 
         }
+
 
         // POST: Filmes/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -271,7 +273,7 @@ namespace NotNetflix.Controllers
                             correto = false;
                         }
                 }
-
+                //verifica se a lista de géneros do filme foi alterada
                 if(gensAdicionados.Any()|| gensRetirados.Any())
                 {
                     if (gensRetirados.Any())
@@ -301,9 +303,7 @@ namespace NotNetflix.Controllers
                     correto = false;
                     ModelState.AddModelError("","Adicione uma data válida");
                 }
-
-
-
+                //verifica se o link introduzido possua o formato pretendido
                 if (newFilme.Path.Contains("youtube.com/embed/"))
                 {
                     filme.Path = newFilme.Path;
@@ -351,7 +351,7 @@ namespace NotNetflix.Controllers
                         string nomeFoto = "";
                         foreach (IFormFile photo in fotografias)
                         {
-                            var modelo = new Fotografia();
+                            Fotografia modelo = new Fotografia();
                             //definir o nome do ficheiro
                             Guid a;
                             a = Guid.NewGuid();
@@ -365,14 +365,17 @@ namespace NotNetflix.Controllers
                             modelo.FilmeFK = newFilme.Id;
                             try
                             {
-                                //cria o ficheiro da foto
+                                //criação do ficheiro da foto
                                 using var play = new FileStream(nomeFoto, FileMode.Create);
-                                await photo.CopyToAsync(play);//pode ocorrer erros aqui
+                                await photo.CopyToAsync(play);
+                                //introduz a fotografia na base de dados
                                 _context.Add(modelo);
-                                await _context.SaveChangesAsync();//pode ocorrer erros aqui
+                                //guarda os ficheiros na base de dados
+                                await _context.SaveChangesAsync();
                             }
                             catch (Exception o)
                             {
+
                                 ModelState.AddModelError("", o.ToString());
                                 ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
                                 return View(filme);
@@ -380,7 +383,7 @@ namespace NotNetflix.Controllers
                         }
                     }
 
-
+                    //caso tenham sido selecionadas fotografias para serem apagadas
                     if (fotosRetiradas.Any())
                     {
                        
@@ -394,7 +397,7 @@ namespace NotNetflix.Controllers
                                 await _context.SaveChangesAsync();
                                 //apagar a fotografia do disco rígido
                                 var link = Path.Combine(_caminho.WebRootPath, "fotos", fotoRemove.Path);
-                                System.IO.File.Delete(link);//realizar depois de guardar os dados na base de dados
+                                System.IO.File.Delete(link);
                             }
                             catch (Exception o) {
                                 ModelState.AddModelError("","Houve um erro na remoção das fotografias por favor tente outravaz");
@@ -405,9 +408,6 @@ namespace NotNetflix.Controllers
                         }
 
                     }
-                    //caso não ocorram problemas com a criação dos ficheiros prossegue | caso contrário devolve o controlo à view
-
-                    //caso as alterações tenham sido guardadas sem problemas cria as fotografias na base de dados
                 }
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
@@ -415,6 +415,8 @@ namespace NotNetflix.Controllers
             ViewBag.Generos = await _context.Genero.OrderBy(g => g.Genre).ToListAsync();
             return View(filme);
         }
+        
+        
         // GET: Filmes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

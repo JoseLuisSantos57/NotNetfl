@@ -42,6 +42,27 @@ namespace NotNetflix.Models
         [Display(Name = "Telemóvel")]
         public string N_telemovel { get; set; }
 
+        /// <summary>
+        /// Código postal do utilizador
+        /// </summary>
+        [Display(Name = "Código Postal")]
+        [RegularExpression("[0-9]{4}-[0-9]{3}", ErrorMessage = "Introduza um código postal válido")]
+        public string CodPostal { get; set; }
+
+        /// <summary>
+        /// Morada do utilizador
+        /// </summary>
+        [Required]
+        public string Morada { get; set; }
+
+        /// <summary>
+        /// Data de nascimento
+        /// </summary>
+        [Display(Name = "Data de Nascimento")]
+        public DateTime dataNascimento { get; set; }
+
+
+
         public ICollection<Filme> ListasDeFilmes { get; set; }
         //###########################################################################
         // FK para a tabela de Autenticação

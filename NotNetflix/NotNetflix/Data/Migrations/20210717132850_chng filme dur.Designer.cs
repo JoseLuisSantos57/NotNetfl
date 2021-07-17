@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NotNetflix.Data;
 
 namespace NotNetflix.Data.Migrations
 {
     [DbContext(typeof(NotNetflixDataBase))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210717132850_chng filme dur")]
+    partial class chngfilmedur
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,14 +81,14 @@ namespace NotNetflix.Data.Migrations
                         new
                         {
                             Id = "u",
-                            ConcurrencyStamp = "3aff4cae-0232-4e1e-ac7f-41dc5cd0d29c",
+                            ConcurrencyStamp = "9f47f0d1-0d07-43e2-89b5-c318e1976c83",
                             Name = "Utilizador",
                             NormalizedName = "UTILIZADOR"
                         },
                         new
                         {
                             Id = "g",
-                            ConcurrencyStamp = "f5464425-40e9-4f34-a6c0-24c7d6aaa5f2",
+                            ConcurrencyStamp = "8f776d43-f1b6-47fe-a9d1-698486e704a8",
                             Name = "Gestor",
                             NormalizedName = "GESTOR"
                         });
@@ -283,8 +285,8 @@ namespace NotNetflix.Data.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
-                    b.Property<double>("Duracao")
-                        .HasColumnType("float");
+                    b.Property<string>("Duracao")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Path")
                         .HasColumnType("nvarchar(max)");

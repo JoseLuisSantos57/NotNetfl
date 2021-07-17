@@ -20,7 +20,7 @@ namespace NotNetflix.Data
         // /// se fizerem isto, estão a adicionar todos os atributos do 'Cliente'
         // /// à tabela de autenticação
         // /// </summary>
-        // public Clientes Cliente { get; set; }
+        // public Utilizador cliente { get; set; }
     }
     public class NotNetflixDataBase : IdentityDbContext<ApplicationUser>
     {

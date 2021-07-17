@@ -15,31 +15,51 @@ namespace NotNetflix.Controllers
     [Authorize]
     public class UtilizadoresController : Controller
     {
+        /// <summary>
+        /// este atributo representa a base de dados do projeto
+        /// </summary>
         private readonly NotNetflixDataBase _context;
+        /// <summary>
+        /// esta variável recolhe os dados da pessoa q se autenticou
+        /// </summary>
         private readonly UserManager<ApplicationUser> _userManager;
         public UtilizadoresController(NotNetflixDataBase context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
-
+        [Authorize(Roles = "Gestor")]
         // GET: Utilizadores
         public async Task<IActionResult> Index()
         {
             return View(await _context.Utilizador.ToListAsync());
         }
-
+        [Authorize(Roles = "Gestor,Utilizador")]
         // GET: Utilizadores/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, string? userName)
         {
+            //var ola = _userManager.Users.FirstOrDefaultAsync(m => m.Id == _userManager.GetUserId(User));
+            
+            var utilizador = await _context.Utilizador.FirstOrDefaultAsync(f => f.Email == userName);
+            if(userName != null)
+            {
+                if (utilizador != null)
+                {
+                    return View(utilizador);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
             if (id == null)
             {
                 return NotFound();
             }
-
-            var utilizador = await _context.Utilizador
+            
+            var user = await _context.Utilizador
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (utilizador == null)
+            if (user == null)
             {
                 return NotFound();
             }
@@ -84,7 +104,7 @@ namespace NotNetflix.Controllers
         /// <param name="utilizadores">lista desses utilizadores</param>
         /// <returns></returns>
         [HttpPost]
-         [Authorize(Roles = "Gestor,Utilizador")] // --> permite acesso a pessoas com uma das duas roles  
+        [Authorize(Roles = "Gestor")] // --> permite acesso a pessoas com uma das duas roles  
         public async Task<IActionResult> ListaUtilizadoresPorAutorizar(string[] utilizadores)
         {
 
@@ -121,33 +141,11 @@ namespace NotNetflix.Controllers
         }
 
 
-        //#################################################################################
-        // GET: Utilizadores/Create
-        /*
-        public IActionResult Create()
-        {
-            return View();
-        }
 
-        // POST: Utilizadores/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Email,N_telemovel")] Utilizador utilizador)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(utilizador);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(utilizador);
-        }*/
-        //######################################################################################
         // GET: Utilizadores/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            
             if (id == null)
             {
                 return NotFound();
@@ -166,23 +164,46 @@ namespace NotNetflix.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Email,N_telemovel")] Utilizador utilizador)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Email,N_telemovel,Morada,CodPostal,dataNascimento")] Utilizador newUtilizador)
         {
-            if (id != utilizador.Id)
+            Utilizador utilizador = await _context.Utilizador.FirstOrDefaultAsync(m => m.Id == id);
+            //não é possível pesquisar pelo email do newUtilizador na tabela AspUser pois o valor do email já foi alterado
+            ApplicationUser identidade = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == utilizador.Email);
+            if (id != newUtilizador.Id || identidade == null)
             {
-                return NotFound();
+                ModelState.AddModelError("", "Ocorreu um erro..");
+                return View();
             }
+
 
             if (ModelState.IsValid)
             {
+
+
+                if (newUtilizador.dataNascimento.CompareTo(DateTime.Now.AddYears(-18)) > 0)
+                {
+                    ModelState.AddModelError("", "Para entrar no site é necessário ser maior de 18 anos");
+                    return View(newUtilizador);
+                }
+                utilizador.Nome = newUtilizador.Nome;
+                utilizador.Morada = newUtilizador.Morada;
+                utilizador.CodPostal = newUtilizador.CodPostal;
+                utilizador.Email = newUtilizador.Email;
+                utilizador.dataNascimento = newUtilizador.dataNascimento;
+                utilizador.N_telemovel = newUtilizador.N_telemovel;
+                identidade.Email = newUtilizador.Email;
+                identidade.UserName = newUtilizador.Email;
+                identidade.NormalizedEmail = identidade.Email.ToUpper();
+                identidade.NormalizedUserName = identidade.UserName.ToUpper();
                 try
                 {
-                    _context.Update(utilizador);
+                    _context.Users.Update(identidade);
+                    _context.Utilizador.Update(utilizador);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UtilizadorExists(utilizador.Id))
+                    if (!UtilizadorExists(newUtilizador.Id))
                     {
                         return NotFound();
                     }
@@ -193,7 +214,7 @@ namespace NotNetflix.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(utilizador);
+            return View(newUtilizador);
         }
 
         // GET: Utilizadores/Delete/5
@@ -203,12 +224,13 @@ namespace NotNetflix.Controllers
             {
                 return NotFound();
             }
-
-            var utilizador = await _context.Utilizador
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (utilizador == null)
+            var utilizador = await _context.Utilizador.FirstOrDefaultAsync(m => m.Id == id);
+            var identidade = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == utilizador.Email);
+            
+            if (utilizador == null || identidade == null)
             {
-                return NotFound();
+                ModelState.AddModelError("", "Utilizador Inválido");
+                return View();
             }
 
             return View(utilizador);
@@ -220,8 +242,16 @@ namespace NotNetflix.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var utilizador = await _context.Utilizador.FindAsync(id);
+            var identidade = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == utilizador.Email);
+            try { 
             _context.Utilizador.Remove(utilizador);
+            _context.Users.Remove(identidade);
             await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return View();
+            }
             return RedirectToAction(nameof(Index));
         }
 

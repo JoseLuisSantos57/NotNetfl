@@ -36,20 +36,35 @@
 
       </div>
       <div class="col-md-6 col-md-offset-2">
-         @* Pedir ao novo utilizador que preencha os dados do utilizador *@
-         <h4>Dados do Utilizador</h4>
-         <hr />
-         <div class="form-group">
-            <label asp-for="Input.User. Nome" class="control-label"></label>
-            <input asp-for="Input.User.Nome" class="form-control" />
-            <span asp-validation-for="Input.User.Nome" class="text-danger"></span>
-         </div>
-         
-         <div class="form-group">
-            <label asp-for="Input.User.N_telemovel" class="control-label"></label>
-            <input asp-for="Input.User.N_telemovel" class="form-control" />
-            <span asp-validation-for="Input.User.N_telemovel" class="text-danger"></span>
-         </div>
+          @* Pedir ao novo utilizador que preencha os dados do utilizador *@
+          <h4>Dados do Utilizador</h4>
+          <hr />
+          <div class="form-group">
+              <label asp-for="Input.User. Nome" class="control-label"></label>
+              <input asp-for="Input.User.Nome" class="form-control" />
+              <span asp-validation-for="Input.User.Nome" class="text-danger"></span>
+          </div>
+
+          <div class="form-group">
+              <label asp-for="Input.User.N_telemovel" class="control-label"></label>
+              <input asp-for="Input.User.N_telemovel" class="form-control" />
+              <span asp-validation-for="Input.User.N_telemovel" class="text-danger"></span>
+          </div>
+          <div class="form-group">
+              <label asp-for="Input.User.CodPostal" class="control-label"></label>
+              <input asp-for="Input.User.CodPostal" class="form-control" />
+              <span asp-validation-for="Input.User.CodPostal" class="text-danger"></span>
+          </div>
+          <div class="form-group">
+              <label asp-for="Input.User.Morada" class="control-label"></label>
+              <input asp-for="Input.User.Morada" class="form-control" />
+              <span asp-validation-for="Input.User.Morada" class="text-danger"></span>
+          </div>
+          <div class="form-group">
+              <label asp-for="Input.User.dataNascimento" class="control-label"></label>
+              <input asp-for="Input.User.dataNascimento" class="form-control" />
+              <span asp-validation-for="Input.User.dataNascimento" class="text-danger"></span>
+          </div>
 
       </div>
    </div>

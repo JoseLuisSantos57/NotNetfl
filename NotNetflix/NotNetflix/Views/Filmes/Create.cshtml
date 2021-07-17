@@ -23,10 +23,13 @@
             @*Div para adicionar multiplas fotografias do filme*@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label class="control-label" asp-for="ListasDeFotografias">Ficheiros das Fotografias do filme</label><br />
-                <label class="control-label">Sendo que o primeiro ficheiro inserido é a capa do filme</label><br />
+                <label class="control-label" asp-for="ListasDeFotografias">
+                    Ficheiros das Fotografias do filme 
+                    (Sendo que o primeiro ficheiro inserido é a capa do filme)
+                </label><br />
+                                                                                    
                 <input type="file" name="fotografia" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple class="form-control" />
-                <span asp-validation-for="Path" class="text-danger"></span>
+                <span asp-validation-for="ListasDeFotografias" class="text-danger"></span>
             </div>
             @*Título do filme*@
         <div class="form-group">
@@ -49,8 +52,8 @@
             </div>
             @*Duração em formato a definir *@
             <div class="form-group">
-                <label class="control-label">Duração (no formato horas:minutos)</label><br />
-                <input asp-for="Duracao" placeholder="ex.1:20 --> 1 e 20 minutos" class="form-control"/>
+                <label class="control-label">Duração (nº de minutos)</label><br />
+                <input asp-for="Duracao" placeholder="ex.1h20m --> 80" class="form-control"/>
                 <span asp-validation-for="Duracao" class="text-danger" ></span>
             </div>
             @*rating dos críticos*@

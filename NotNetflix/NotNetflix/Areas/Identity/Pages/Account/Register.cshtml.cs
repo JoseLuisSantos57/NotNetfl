@@ -156,43 +156,25 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
                     //if (Input.User.Email.CompareTo("gestor@gmail.com") == 0) { 
 
                     if (Input.Email.EndsWith("@notnetflix.pt")) {   
-                     await _userManager.AddToRoleAsync(user, "Utilizador");
-                    } 
+                     await _userManager.AddToRoleAsync(user, "Gestor");
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, "Utilizador");
+                    }
                     Input.User.Email = Input.Email; // atribuir ao objeto 'criador' o email fornecido pelo utilizador,
                                                         // a quando da escreita dos dados na interface
                                                         // exatamente a mesma tarefa feita na linha 128
 
-                        Input.User.UserNameId = user.Id;  // adicionar o ID do utilizador,
-                                                          // para formar uma 'ponte' (foreign key) entre
-                                                          // os dados da autenticação e os dados do 'negócio'
-                    //}
-                    /*else
-                    {
-
-                        await _userManager.AddToRoleAsync(user, "Utilizador");
-                        //await UserManager.AddToRoleAsync(user.Id, "role1");
-                        //await UserManager.AddToRoleAsync(user.Id, "role2");
-                        //*************************************************************
-                        // Vamos proceder à operação de guardar os dados do Criador
-                        //*************************************************************
-                        // preparar os dados do Criador para serem adicionados à BD
-                        Input.User.Email = Input.Email; // atribuir ao objeto 'criador' o email fornecido pelo utilizador,
-                                                        // a quando da escreita dos dados na interface
-                                                        // exatamente a mesma tarefa feita na linha 128
-
-                        Input.User.UserNameId = user.Id;  // adicionar o ID do utilizador,
-                                                          // para formar uma 'ponte' (foreign key) entre
-                                                          // os dados da autenticação e os dados do 'negócio'
-
-
-                    }
-                    */
+                    Input.User.UserNameId = user.Id;  // adicionar o ID do utilizador,
+                       
                // estamos em condições de guardar os dados na BD
                try {
                   _context.Add(Input.User); // adicionar o Criador
                   await _context.SaveChangesAsync(); // 'commit' da adição
                                                      // Enviar para o utilizador para a página de confirmação da criaçao de Registo
-                  return RedirectToAction("Login","Identity", new { area = "" });
+                        //asp - area = "Identity" asp - page = "/Account/Manage/Index"
+                        return RedirectToAction("Index", "Home");
                     }
                catch (Exception) {
                   // houve um erro na criação dos dados do Criador
