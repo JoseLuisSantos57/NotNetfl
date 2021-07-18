@@ -61,7 +61,10 @@ namespace NotNetflix.Models
         [Display(Name = "Data de Nascimento")]
         public DateTime dataNascimento { get; set; }
 
-
+        ///// <summary>
+        ///// Referência da tabela AspUsers
+        ///// </summary>
+        //public string userId { get; set; }
 
         public ICollection<Filme> ListasDeFilmes { get; set; }
         //###########################################################################

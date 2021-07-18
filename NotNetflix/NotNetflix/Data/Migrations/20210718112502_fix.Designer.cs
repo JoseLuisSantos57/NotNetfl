@@ -10,8 +10,8 @@ using NotNetflix.Data;
 namespace NotNetflix.Data.Migrations
 {
     [DbContext(typeof(NotNetflixDataBase))]
-    [Migration("20210717133813_Duracao para double")]
-    partial class Duracaoparadouble
+    [Migration("20210718112502_fix")]
+    partial class fix
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -81,14 +81,14 @@ namespace NotNetflix.Data.Migrations
                         new
                         {
                             Id = "u",
-                            ConcurrencyStamp = "3aff4cae-0232-4e1e-ac7f-41dc5cd0d29c",
+                            ConcurrencyStamp = "49d1f28a-1485-4751-81a8-01a487257f21",
                             Name = "Utilizador",
                             NormalizedName = "UTILIZADOR"
                         },
                         new
                         {
                             Id = "g",
-                            ConcurrencyStamp = "f5464425-40e9-4f34-a6c0-24c7d6aaa5f2",
+                            ConcurrencyStamp = "b862c0be-a124-4154-9b03-21917fa7cbd5",
                             Name = "Gestor",
                             NormalizedName = "GESTOR"
                         });

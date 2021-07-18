@@ -4,11 +4,11 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Detalhes de conta</h1><p class="text-right"><a asp-action="Index" asp-controller="Home">PÁGINA INICIAL</a>&ensp;<a href="javascript:window.history.back();">VOLTAR</a></p>
 
 <div>
-    <h4>Utilizador</h4>
-    <hr />
+ 
+  
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Nome)
@@ -37,6 +37,8 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model.Id">Editar dados</a> |
+    @if (User.IsInRole("Gestor")) {
     <a asp-action="Index">Back to List</a>
+    }
 </div>

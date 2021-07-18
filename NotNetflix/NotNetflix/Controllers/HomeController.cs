@@ -30,6 +30,8 @@ namespace NotNetflix.Controllers
         {
             string[] headers= { "RECENTES","A ESCOLHA DOS CRÍTICOS", "POR DURAÇÃO" };
             ViewBag.Headers = headers;
+            ViewBag.Recentes = _context.Filme.OrderByDescending(d => d.Data).Take(6);
+            //ViewBag.EscolhaCrit = 
 
             var lista = await _context.Filme.Include(f => f.ListasDeFotografias).ToListAsync();
 
@@ -46,7 +48,7 @@ namespace NotNetflix.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-        [Authorize(Roles = "Gestor,Utilizador")]
+        [Authorize]
         public async Task<IActionResult> FilmePag(int? id)
         {
             if (id == null)
@@ -65,6 +67,13 @@ namespace NotNetflix.Controllers
             }
             return View(filme);
         }
+        
+        /// <summary>
+        /// método usado para gerir a view AllFilmes e a ordenação dos dados apresentados
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public async Task<IActionResult> AllFilmes(int? a, string? s)
         {
             //fazer switch case
@@ -95,7 +104,7 @@ namespace NotNetflix.Controllers
                 case 3:
                 
                 var filmesDur = await _context.Filme.OrderBy(i => i.Duracao).Include(l => l.ListasDeFotografias).ToListAsync();
-                
+               
                 ViewBag.Titulo = "FILMES MAIS LONGOS";
                 return View(filmesDur);
                 

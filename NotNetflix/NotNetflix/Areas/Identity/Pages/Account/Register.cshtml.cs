@@ -113,34 +113,33 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
       /// <param name="returnUrl">link para redirecionar o utilizador, se fornecido</param>
       /// <returns></returns>
       public async Task<IActionResult> OnPostAsync(string returnUrl = null) {
-         // não preciso de especificar uma variável de adição de dados da 'view'
-         // a este método, pq essa variável já está previamente definida no
-         // atributo 'Input'
-         //   public InputModel Input { get; set; }
-
+         
          // se o 'returnUrl' for null, é-lhe atribuído um URL
          // se não for Null, nada é feito
          returnUrl ??= Url.Content("~/");
-           
-
-         // ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
          // validar se se pode criar um USER
          // Se os dados forem validados pela classe 'InputModel'
          if (ModelState.IsValid) {
 
-
-                //DateTime plano = new DateTime(DateTime.Now.Day ,); 
-
+         //var aux = new Utilizador(){
+         //           Email = Input.Email,
+         //           Morada = Input.User.Morada,
+         //           CodPostal = Input.User.CodPostal,
+         //           dataNascimento = Input.User.dataNascimento,
+         //           Nome = Input.User.Nome,
+         //           N_telemovel = Input.User.N_telemovel
+         //   };
+            
 
             // criar um objeto do tipo 'ApplicationUser'
             var user = new ApplicationUser {
                UserName = Input.Email, // username
                Email = Input.Email,    // email do utilizador
-               EmailConfirmed = true, // o email não está formalmente confirmado
-               LockoutEnabled = false,  // o utilizador pode ser bloqueado
+               EmailConfirmed = true, // o email está formalmente confirmado
+               LockoutEnabled = false,  // o utilizador não pode ser bloqueado
                
-                LockoutEnd = new DateTime(DateTime.Now.Day + 1, 1, 1),  // data em que termina o bloqueio,
+                //LockoutEnd = new DateTime(DateTime.Now.Day + 1, 1, 1),  // data em que termina o bloqueio,
                                                                          // se não for anulado antes
                DataRegisto = DateTime.Now // data do registo
             };
@@ -152,9 +151,14 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
             if (result.Succeeded) {
                _logger.LogInformation("User created a new account with password.");
 
+                    
+                    //verificar se o utilizador é maior de idade
+                    if (Input.User.dataNascimento.CompareTo(DateTime.Now.AddYears(-18)) > 0)
+                    {
+                        ModelState.AddModelError("", "Para entrar no site é necessário ser maior de 18 anos");
+                        return Page();
+                    }
                     //Para a criação do gestor vai verificar se o email é o seguinte
-                    //if (Input.User.Email.CompareTo("gestor@gmail.com") == 0) { 
-
                     if (Input.Email.EndsWith("@notnetflix.pt")) {   
                      await _userManager.AddToRoleAsync(user, "Gestor");
                     }
@@ -166,13 +170,15 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
                                                         // a quando da escreita dos dados na interface
                                                         // exatamente a mesma tarefa feita na linha 128
 
-                    Input.User.UserNameId = user.Id;  // adicionar o ID do utilizador,
+                    //Input.User.UserNameId = user.Id;  // adicionar o ID do utilizador,
                        
                // estamos em condições de guardar os dados na BD
                try {
-                  _context.Add(Input.User); // adicionar o Criador
+                  _context.Add(Input.User);
+                        
                   await _context.SaveChangesAsync(); // 'commit' da adição
-                                                     // Enviar para o utilizador para a página de confirmação da criaçao de Registo
+                         
+                        
                         //asp - area = "Identity" asp - page = "/Account/Manage/Index"
                         return RedirectToAction("Index", "Home");
                     }

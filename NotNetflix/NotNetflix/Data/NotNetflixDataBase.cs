@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using NotNetflix.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace NotNetflix.Data
@@ -16,11 +17,10 @@ namespace NotNetflix.Data
         /// </summary>
         public DateTime DataRegisto { get; set; }
 
-        // /// <summary>
-        // /// se fizerem isto, estão a adicionar todos os atributos do 'Cliente'
-        // /// à tabela de autenticação
-        // /// </summary>
-        // public Utilizador cliente { get; set; }
+        //[ForeignKey(nameof(cliente))]
+        //public int UtilizadorFK { get; set; }
+        [ForeignKey("userId")]
+        public virtual Utilizador user { get; set; }
     }
     public class NotNetflixDataBase : IdentityDbContext<ApplicationUser>
     {

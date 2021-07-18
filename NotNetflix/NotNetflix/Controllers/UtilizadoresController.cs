@@ -64,84 +64,10 @@ namespace NotNetflix.Controllers
                 return NotFound();
             }
 
-            return View(utilizador);
+            return View(user);
         }
 
-
-
-        /// <summary>
-        /// Método para apresentar os dados dos Criadores a autorizar
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Authorize(Roles = "Gestor")]
-        public async Task<IActionResult> ListaCriadoresPorAutorizar()
-        {
-
-            // quais os Criadores ainda não autorizados a aceder ao Sistema?
-            // lista com os utilizadores bloqueados
-            var listaDeUtilizadores = _userManager.Users.Where(u => u.LockoutEnd > DateTime.Now);
-            // lista com os dados dos Criadores
-            var listaUtilizadores = _context.Utilizador
-                                         .Where(c => listaDeUtilizadores.Select(u => u.Id)
-                                                                       .Contains(c.UserNameId));
-            /* Em SQL seria algo deste género
-             * SELECT c.*
-             * FROM Criadores c, Users u
-             * WHERE c.UserName = u. Id AND
-             *       u.LockoutEnd > Data Atual          * 
-             */
-
-            // Enviar os dados para a View
-            return View(await listaUtilizadores.ToListAsync());
-        }
-
-            //[Authorize(Roles = "Gestor")]   //  -->
-         //[Authorize(Roles = "Cliente")]   // -->  Neste caso, a pessoa tem de pertencer aos dois roles
-        /// <summary>
-        /// método que recebe os dados dos utilizadores a desbloquear
-        /// </summary>
-        /// <param name="utilizadores">lista desses utilizadores</param>
-        /// <returns></returns>
-        [HttpPost]
-        [Authorize(Roles = "Gestor")] // --> permite acesso a pessoas com uma das duas roles  
-        public async Task<IActionResult> ListaUtilizadoresPorAutorizar(string[] utilizadores)
-        {
-
-            // será que algum utilizador foi selecionado?
-            if (utilizadores.Count() != 0)
-            {
-                // há users selecionados
-                // para cada um, vamos desbloqueá-los
-                foreach (string u in utilizadores)
-                {
-                    try
-                    {
-                        // procurar o 'utilizador' na tabela dos Users
-                        var user = await _userManager.FindByIdAsync(u);
-                        // desbloquear o utilizador
-                        await _userManager.SetLockoutEndDateAsync(user, DateTime.Now.AddDays(-1));
-                        // como não se pediu ao User para validar o seu email
-                        // é preciso aqui validar esse email
-                        string codigo = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        await _userManager.ConfirmEmailAsync(user, codigo);
-
-                        // eventualmente, poderá ser enviado um email para o utilizador a avisar que 
-                        // a sua conta foi desbloqueada
-                    }
-                    catch (Exception)
-                    {
-                        // deveria haver aqui uma mensagem de erro para o utilizador,
-                        // se assim o entender
-                    }
-                }
-            }
-
-            return RedirectToAction("Index");
-        }
-
-
-
+        [Authorize]
         // GET: Utilizadores/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -168,7 +94,7 @@ namespace NotNetflix.Controllers
         {
             Utilizador utilizador = await _context.Utilizador.FirstOrDefaultAsync(m => m.Id == id);
             //não é possível pesquisar pelo email do newUtilizador na tabela AspUser pois o valor do email já foi alterado
-            ApplicationUser identidade = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == utilizador.Email);
+            ApplicationUser identidade = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == utilizador.UserNameId);
             if (id != newUtilizador.Id || identidade == null)
             {
                 ModelState.AddModelError("", "Ocorreu um erro..");
@@ -217,6 +143,9 @@ namespace NotNetflix.Controllers
             return View(newUtilizador);
         }
 
+
+
+        [Authorize]
         // GET: Utilizadores/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -235,7 +164,7 @@ namespace NotNetflix.Controllers
 
             return View(utilizador);
         }
-
+        [Authorize]
         // POST: Utilizadores/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
