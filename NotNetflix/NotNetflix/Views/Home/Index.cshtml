@@ -22,15 +22,13 @@
         {
             <a asp-action="FilmePag" asp-route-id="@item.Id">
 
-
-
-                <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
+                <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="Capa do filme" />
             </a>
         }
         else
         {
             <a asp-area="Identity" asp-page="/Account/Login">
-                <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
+                <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="Capa do filme" />
             </a>
         }
 
