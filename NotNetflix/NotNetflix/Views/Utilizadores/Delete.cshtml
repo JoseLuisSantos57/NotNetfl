@@ -42,7 +42,18 @@
 
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <button type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Tem a certeza que quer apagar o utilizador : @Model.Email')"/>Apagar Utilizador<button /> |
-        <a asp-action="Index" >Back to List</a>
+        <span id="confirmDeleteSpan_@Model.UserNameId" style="display:none">
+            <span>
+                De certeza que pretende apagar a conta?
+            </span>
+            <button type="submit" class="btn btn-danger">Sim</button>
+            <a href="#" class="btn btn-primary" onclick="confirmDelete('@Model.UserNameId', false)">Não</a>
+        </span>
+        <span class="botaoApagar" id="deleteSpan_@Model.UserNameId">
+            <a href="#" class="btn btn-danger" ´value="Delete" onclick="confirmDelete('@Model.UserNameId', true)">Apagar</a>
+        </span>
     </form>
 </div>
+@section Scripts{ 
+    <script src="~/js/custom.js"></script>
+}

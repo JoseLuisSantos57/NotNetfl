@@ -26,6 +26,9 @@ namespace NotNetflix.Models
         [Display (Name ="Género")]
         public string Genre { get; set; }
 
+        /// <summary>
+        /// lista de filmes associados aos géneros
+        /// </summary>
         public ICollection<Filme> ListaDeFilmes { get; set; }
     }
 }

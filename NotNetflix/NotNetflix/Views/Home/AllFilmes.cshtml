@@ -15,28 +15,41 @@
 
     @foreach (var item in Model)
     {
-        
-            double hours = (item.Duracao - item.Duracao % 60) / 60;
-            string duracao = "" + hours + ":" + (item.Duracao - hours * 60);
-        
 
-    @if (User.Identity.IsAuthenticated)
-    {
+        double hours = (item.Duracao - item.Duracao % 60) / 60;
+        string duracao = "" + hours + "h :" + (item.Duracao - hours * 60) + " m";
+
+
+
 
         <div class="movie">
-            <div class="movie-image"> <span class="play"><span class="name"></span></span> <a asp-action="FilmePag" asp-route-id="@item.Id"><img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" /></a> </div>
+            <div class="movie-image">
+                <span class="play"><span class="name"></span></span>  
+                @if (User.Identity.IsAuthenticated)
+                {
+
+                    <a asp-action="FilmePag" asp-route-id="@item.Id">
+                        <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-page="/Account/Login">
+                        <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
+                    </a>
+                }
+            </div>
             <div class="rating">
                 <p>RATING @item.Rating/10</p><br />
                 <p>Data : @item.Data.Year</p><br />
                 <p>Duração : @duracao</p><br />
                 @if (User.IsInRole("Gestor"))
                 {
-                    <a asp-action="Edit" asp-controller="Filmes" asp-route-id="@item.Id">Edit</a>
-                    <a asp-action="Delete" asp-controller="Filmes" asp-route-id="@item.Id"> Delete </a>
+                    <a asp-action="Edit" asp-controller="Filmes" t asp-route-id="@item.Id">Edit</a>
                 }
             </div>
         </div>
-    }
+    
 
 }
     <div class="cl">&nbsp;</div>

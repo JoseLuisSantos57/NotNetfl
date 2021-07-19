@@ -8,13 +8,9 @@
 <head>
     <title>MovieHunter</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-
     <script src="~/js/jquery-func.js"></script>
     <script src="~/js/jquery_1.4.2.js"></script>
-    <!--<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />-->
     <link href="~/css/folha_de_estilos.css" rel="stylesheet" />
-    <!--[if IE 6]><link rel="stylesheet" href="css/ie6.css" type="text/css" media="all" /><![endif]-->
 </head>
 <body>
     <!-- START PAGE SOURCE -->
@@ -22,7 +18,7 @@
         <div id="header">
             <h1 id="logo"><a href="#">!Netflix</a></h1>
             <div class="social">
-                <span>FOLLOW US ON:</span>
+                <span>SIGA-NOS NAS REDES SOCIAIS:</span>
                 <ul>
                     <li><a class="twitter" href="https://twitter.com/?lang=pt">twitter</a></li>
                     <li><a class="facebook" href="https://www.facebook.com/">facebook</a></li>
@@ -37,7 +33,7 @@
                     @if (User.IsInRole("Gestor"))
                     {
                         <li><a asp-action="Index" asp-controller="Utilizadores">GERIR UTILIZADORES</a></li>
-                        <li><a asp-action="Create" asp-controller="Filmes">CRIAR FILMES</a></li>
+                        <li><a asp-action="Create" asp-controller="Filmes">INTRODUZIR FILME</a></li>
                     }
                     @if (SignInManager.IsSignedIn(User))
                     {
@@ -53,10 +49,9 @@
             </div>
             <div id="sub-navigation">
                 <ul>
-                    <li><a asp-controller="Home" asp-action="AllFilmes">SHOW ALL</a></li>
-                    @*Atenção aqui*@
+                    <li><a asp-controller="Home" asp-action="AllFilmes">MOSTRAR TODOS</a></li>
                     <li><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="1">MOST RECENT MOVIE</a></li>
-                    <li><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="2">TOP RATED</a></li>
+                    <li><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="2">MELHORES CLASSIFICADOS</a></li>
 
                 </ul>
                 <div id="search">
@@ -82,11 +77,14 @@
     <div class="cl">&nbsp;</div>
 
     <div id="footer">
-        <p class="lf">Copyright &copy; 2021 <a href="#">NotNetflix</a> - All Rights Reserved</p>
+        <p class="lf">Copyright &copy; 2021 <a href="#">NotNetflix</a> - All Rights Reserved - </p>
 
         <div style="clear:both;"></div>
     </div>
-    @await RenderSectionAsync("Scripts", required: false)
+    @if (IsSectionDefined("Scripts")) {
+        @RenderSection("Scripts", required:true);
+    }
+    @*@await RenderSectionAsync("Scripts", required: false)*@
     <!-- END PAGE SOURCE -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

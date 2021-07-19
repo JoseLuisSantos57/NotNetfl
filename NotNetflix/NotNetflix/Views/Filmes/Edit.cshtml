@@ -4,89 +4,95 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit Movie</h1>
-
+<h1>Edit Movie</h1><p class="text-right"><a href="javascript:window.history.back();">VOLTAR</a></p>
 
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data">
+        <form asp-action="Edit" enctype="multipart/form-data" method="post" asp-controller="Filmes">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <p>Ficheiro do filme atual</p>
-                <div class="form-group">
-                    <label asp-for="Path" class="control-label"></label>
-                    <input asp-for="Path" class="form-control" />
-                    <span asp-validation-for="Path" class="text-danger"></span>
+                @Html.LabelFor(model => model.Path, htmlAttributes: new { @class = "control-label col-md-2" })
+
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Path, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Path, "", new { @class = "text-danger" })
                 </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Titulo, htmlAttributes: new { @class = "control-label col-md-2" })
 
-            </div>
+                <div class="col-md-10">
+                 @Html.EditorFor(model => model.Titulo, new { htmlAttributes = new { @class = "form-control" } })
+                 @Html.ValidationMessageFor(model => model.Titulo, "", new { @class = "text-danger" })
+                </div>
+                </div>
             <div class="form-group">
-                <label asp-for="Titulo" class="control-label"></label>
-                <input asp-for="Titulo" class="form-control" />
-                <span asp-validation-for="Titulo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Descricao" class="control-label"></label>
-                <input asp-for="Descricao" class="form-control" />
-                <span asp-validation-for="Descricao" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Data" class="control-label"></label>
-                <input asp-for="Data" class="form-control" />
-                <span asp-validation-for="Data" class="text-danger"></span>
-            </div>
-            @*Duração em minutos*@
-            <div class="form-group">
-                <label asp-for="Duracao" class="control-label"></label>
-                <input asp-for="Duracao" class="form-control" />
-                <span asp-validation-for="Duracao" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Rating" class="control-label"></label>
-                <input asp-for="Rating" class="form-control" />
-                <span asp-validation-for="Rating" class="text-danger"></span>
-            </div>
-            @*Aceitar fotografias novas*@
-            <div>
-                <label class="control-label">Introduzir novas fotografias</label>
-                <input type="file" name="fotografias" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple  class="form-control" /><br />
-            </div>
-            <label class="control-label">Apagar fotografias</label>
-            <div class="form-group">
-                
-                @foreach (var fotos in Model.ListasDeFotografias.OrderBy(i => i.Id))
-                {
-                    <img src="~/fotos/@fotos.Path" alt="" />
+                @Html.LabelFor(model => model.Descricao, htmlAttributes: new { @class = "control-label col-md-2" })
 
-                    <input type="checkbox" name="listaFotosDelete" value="@fotos.Id" />
-                }
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Descricao, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Descricao, "", new { @class = "text-danger" })
+                </div>
             </div>
-            <div class="form-group">
-                @foreach (Genero gen in ViewBag.Generos)
-                {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Data, htmlAttributes: new { @class = "control-label col-md-2" })
 
-                    @if (Model.ListasDeGeneros.Contains(gen))
+                <div class="col-md-10">
+                 @Html.EditorFor(model => model.Data, new { htmlAttributes = new { @class = "form-control" } })
+                 @Html.ValidationMessageFor(model => model.Data, "", new { @class = "text-danger" })
+                </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Duracao, htmlAttributes: new { @class = "control-label col-md-2" })
+
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Duracao, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Duracao, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Rating, htmlAttributes: new { @class = "control-label col-md-2" })
+
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Rating, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Rating, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                @*Aceitar fotografias novas*@
+                <div>
+                    <label class="control-label">Introduzir novas fotografias</label>
+                    <input type="file" name="fotografias" accept=".jpg,.jpeg,.png" style="color:gainsboro;" multiple class="form-control" /><br />
+                </div>
+                <label class="control-label">Selecionar fotografias a apagar</label>
+                <div class="form-group">
+
+                    @foreach (var fotos in Model.ListasDeFotografias.OrderBy(i => i.Id))
                     {
-                        <input class="checkB" type="checkbox" name="listaGenerosEditados" value="@gen.Id"  checked />@gen.Genre<br /><br />
-                    }
-                    else
-                    {
-                        <input type="checkbox" name="listaGenerosEditados" class="control-indicator" value="@gen.Id" />@gen.Genre<br /><br />
-                    }
-                }
-            </div>
+                        <input class="checkImages" type="checkbox" name="listaFotosDelete" value="@fotos.Id" />
+                        <img src="~/fotos/@fotos.Path" alt="Fotografias do filme" /><br />
 
-            <div class="form-group">
-                <input type="submit" value="Edit" class="btn btn-primary" />
-            </div>
-        </form>
+                    }
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Géneros do filme</label><br />
+                    @foreach (Genero gen in ViewBag.Generos)
+                    {
+
+                        @if (Model.ListasDeGeneros.Contains(gen))
+                        {
+                            <input class="checkB" type="checkbox" name="listaGenerosEditados" value="@gen.Id" checked />@gen.Genre<br /><br />
+                        }
+                        else
+                        {
+                            <input type="checkbox" name="listaGenerosEditados" class="control-indicator" value="@gen.Id" />@gen.Genre<br /><br />
+                        }
+                    }
+                </div>
+                    <button type="submit" class="btn btn-primary">Editar</button>
+                    <a class="btn " asp-action="Index" asp-controller="Home">Anular</a>
+
+            </form>
+        </div>
     </div>
-</div>
-
-<div>
-    @*<a asp-action="Index" asp-controller="Home">Back to Home</a>*@
-    <a href="javascript:window.history.back();">Back</a>
-</div>
-

@@ -14,8 +14,6 @@ namespace NotNetflix.Models
             ListasDeFotografias = new HashSet<Fotografia>();
         }
 
-        
-
     /// <summary>
     /// Identificador de filme
     /// </summary>
@@ -23,21 +21,22 @@ namespace NotNetflix.Models
     public int Id { get; set; }
 
     /// <summary>
-    /// Caminho da localização do filme
+    /// url do filme
     /// </summary>
+
     public string Path { get; set; }
 
     /// <summary>
     /// Titulo do filme
     /// </summary>
-    [Required]
     [StringLength(50, ErrorMessage = "O {0} não pode ter mais de {1} carateres." )]
+
     public string Titulo { get; set; }
 
     /// <summary>
-    /// Resumo do filme
+    /// Descrição do filme
     /// </summary>
-    [Required]
+    
     [StringLength(300, ErrorMessage = "O {0} não pode ter mais de {1} carateres.")]
     [Display(Name = "Descrição do filme")]
     public string Descricao { get; set; }
@@ -45,14 +44,13 @@ namespace NotNetflix.Models
     /// <summary>
     /// Data de lançamento do filme
     /// </summary>
-    [Required]
+
     public DateTime Data { get; set; }
 
         /// <summary>
         /// Duração do filme
         /// </summary>
-        //[Required(ErrorMessage = "A duração do filme é de preenchimento obrigatório")]
-        //[RegularExpression("^(1[0-2]|0?[1-9]):([0-5]?[0-9])(●?[AP]M)?$")]
+        [Range(1, 300, ErrorMessage = "A duração do filme não pode ser menor que 1 minuto ou maior que 300 minutos")]
         [Display(Name = "Duração do filme em minutos")]
         public double Duracao { get; set; }
 
@@ -61,17 +59,25 @@ namespace NotNetflix.Models
         //public TimeSpan Tempo { get; set; }
 
         /// <summary>
-        /// Classificação do filme (conforme o imbd) de 0 a 10
+        /// Classificação do filme  de 0 a 10
         /// </summary>
-        [Required]
-    [RegularExpression("^[1-9]$|^(10)$")]
-    public double Rating { get; set;}
 
+        [Range(1,10,ErrorMessage = "O valor do rating tem que estar entre 1 e 10")]
+        public double Rating { get; set;}
 
+        /// <summary>
+        /// lista de utilizadores do filme
+        /// </summary>
     public ICollection<Utilizador> ListasDeUtilizadores { get; set; }
 
+        /// <summary>
+        /// lista de géneros do filme
+        /// </summary>
     public ICollection<Genero> ListasDeGeneros { get; set; }
 
+        /// <summary>
+        /// lista de fotografias do filme
+        /// </summary>
     public ICollection<Fotografia> ListasDeFotografias { get; set; }
     }
 }

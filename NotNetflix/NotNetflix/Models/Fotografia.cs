@@ -16,7 +16,7 @@ namespace NotNetflix.Models
         public int Id { get; set; }
 
         /// <summary>
-        /// Caminho para o poster
+        /// Caminho para a fotografia do filme
         /// </summary>
         public string Path { get; set; }
         

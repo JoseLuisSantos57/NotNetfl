@@ -13,6 +13,7 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="UserNameId" />
             <div class="form-group">
                 <label asp-for="Nome" class="control-label"></label>
                 <input asp-for="Nome" class="form-control" />
@@ -49,8 +50,8 @@
         </form>
     </div>
 </div>
-
+@if (User.IsInRole("Gestor")) { 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-
+}

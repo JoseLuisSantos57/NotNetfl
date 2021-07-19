@@ -61,20 +61,16 @@ namespace NotNetflix.Models
         [Display(Name = "Data de Nascimento")]
         public DateTime dataNascimento { get; set; }
 
-        ///// <summary>
-        ///// Referência da tabela AspUsers
-        ///// </summary>
-        //public string userId { get; set; }
-
+        /// <summary>
+        /// Lista de filmes do utilizador
+        /// </summary>
         public ICollection<Filme> ListasDeFilmes { get; set; }
-        //###########################################################################
-        // FK para a tabela de Autenticação
-        //###########################################################################
+
         /// <summary>
         /// Chave de ligação entre a Autenticação e os Criadores 
-        /// Consegue-se, por exemplo, filtrar os dados dos criadores qd se autenticam
+        /// Consegue-se, por exemplo, filtrar os dados dos criadores quando se autenticam
         /// </summary>
         public string UserNameId { get; set; }
-        //#####################################################################
+
     }
 }

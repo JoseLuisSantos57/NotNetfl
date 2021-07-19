@@ -16,7 +16,7 @@ namespace NotNetflix.Models
         [Key]
         public int Id { get; set; }
 
-        //*******************************FilmeId e Utilizador
+        
         /// <summary>
         /// FK para a tabela dos filmes
         /// </summary>

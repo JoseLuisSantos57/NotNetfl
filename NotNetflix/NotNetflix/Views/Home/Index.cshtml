@@ -3,107 +3,48 @@
 @{
     ViewData["Title"] = "Index";
 }
-@*
-        @{int i;
-           @* List<> condicoes = { "Model.OrderBy(d => d.Data).Take(6)", "Model.OrderByDescending(r => r.Rating).Take(6)", "Model.OrderByDescending(d => d.Duracao).Take(6)" };
-      }
-
-    @for (i = 0; i < 3; i++)
-    {
-        <div class="box">
-            <div class="head">
-                <h2>@Html.Raw(ViewBag.Headers[i])</h2>
-                <p class="text-right"><a asp-action="AllFilmes" asp-controller="Home" asp-route-id="i">See all</a></p>
-            </div>
-
-            @foreach (var item in condicoes[i])
-            {
-
-
-                <div class="movie">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <div class="movie-image">
-                            <span class="play"><span class="@item.Titulo."></span></span>
-
-                            <a asp-action="FilmePag" asp-route-id="@item.Id">
-                                <img src="~/fotos/@item.ListasDeFotografias.Min(f => f.Path)" alt="" />
-                            </a>
-                        </div>
-
-                    }
-                    else
-                    {
-                        <div class="movie-image">
-                            <span class="play"><span class="@item.Titulo."></span></span>
-
-                            <a asp-area="Identity" asp-page="/Account/Login">
-                                <img src="~/fotos/@item.ListasDeFotografias.Min(f => f.Path)" alt="" />
-                            </a>
-                        </div>
-                    }
-                    <div class="rating">
-                        <p>RATING @item.Rating/10</p><br />
-                        <p>Ano : @item.Data.Year</p><br />
-                        <p>Duracao : @item.Duracao</p><br />
-                        @if (User.IsInRole("Gestor"))
-                        {
-                            <a asp-action="Edit" asp-controller="Filmes" asp-route-id="@item.Id">Edit</a>
-                            <a asp-action="Details" asp-controller="Filmes" asp-route-id="@item.Id"> Details </a>
-                            <a asp-action="Delete" asp-controller="Filmes" asp-route-id="@item.Id"> Delete </a>
-                        }
-                    </div>
-                </div>
-            }
-            <div class="cl">&nbsp;</div>
-        </div>
-    }
-
-*@
 
 
 <div class="box">
     <div class="head">
         <h2>RECENTES</h2>
         
-        <p class="text-right"><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="1">Ver mais</a>@*<a asp-action="AllFilmes" asp-controller="Home" asp-route-a="1">See all</a>*@</p>
+        <p class="text-right"><a asp-action="AllFilmes" asp-controller="Home" asp-route-a="1">Ver mais</a>ll</a></p>
     </div>
 
-    @foreach (var item in Model.OrderByDescending(d => d.Data).Take(6))@*Trazer a lista do controller através de viewbag*@
+    @foreach (var item in Model.OrderByDescending(d => d.Data).Take(6))
     {
         double hours = (item.Duracao - item.Duracao % 60) / 60;
-        string duracao = "" + hours + ":" + (item.Duracao - hours * 60);
-        <div class="movie">
-            
-            <div class="movie-image">
-                <span class="play"><span class="@item.Titulo."></span></span>
+        string duracao = "" + hours + "h :" + (item.Duracao - hours * 60) + " m";
+<div class="movie">
+    <div class="movie-image">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a asp-action="FilmePag" asp-route-id="@item.Id">
 
-                @if (User.Identity.IsAuthenticated)
-                {
 
-                    <a asp-action="FilmePag" asp-route-id="@item.Id">
-                        <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
-                    </a>
-                }
-                else
-                {
-                    <a asp-area="Identity" asp-page="/Account/Login">
-                        <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
-                    </a>
-                }
 
-                </div>
-            <div class="rating">
-                <p>RATING @item.Rating/10</p><br />
-                <p>Ano : @item.Data.Year</p><br />
-                <p>Duração : @duracao</p><br />
-                @if (User.IsInRole("Gestor"))
-                {
-                    <a asp-action="Edit" asp-controller="Filmes" asp-route-id="@item.Id">Edit</a>
-                    <a asp-action="Delete" asp-controller="Filmes" asp-route-id="@item.Id"> Delete </a>
-                }
-            </div>
-        </div>
+                <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
+            </a>
+        }
+        else
+        {
+            <a asp-area="Identity" asp-page="/Account/Login">
+                <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
+            </a>
+        }
+
+    </div>
+    <div class="rating">
+        <p>RATING @item.Rating/10</p><br />
+        <p>Ano : @item.Data.Year</p><br />
+        <p>Duração : @duracao</p><br />
+        @if (User.IsInRole("Gestor"))
+        {
+            <a asp-action="Edit" asp-controller="Filmes" asp-route-id="@item.Id">Edit</a>
+        }
+    </div>
+</div>
     }
 
     <div class="cl">&nbsp;</div>
@@ -117,36 +58,35 @@
     @foreach (var item in Model.OrderByDescending(r => r.Rating).Take(6))
     {
         double hours = (item.Duracao - item.Duracao % 60) / 60;
-        string duracao = "" + hours + ":" + (item.Duracao - hours * 60);
-        <div class="movie">                                                                                                                                     @*Select path from lista ,(select min(id) from lista) as tbl where lista.id=tbl.id *@                
-            <div class="movie-image">
+        string duracao = "" + hours + "h :" + (item.Duracao - hours * 60) + " m";
+<div class="movie">
+    <div class="movie-image">
 
-                @if (User.Identity.IsAuthenticated)
-                {
+        @if (User.Identity.IsAuthenticated)
+        {
 
-                    <a asp-action="FilmePag" asp-route-id="@item.Id">
-                        <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
-                    </a>
-                }
-                else
-                {
-                    <a asp-area="Identity" asp-page="/Account/Login">
-                        <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
-                    </a>
-                }
+            <a asp-action="FilmePag" asp-route-id="@item.Id">
+                <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="capa do filme" />
+            </a>
+        }
+        else
+        {
+            <a asp-area="Identity" asp-page="/Account/Login">
+                <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="capa do filme" />
+            </a>
+        }
 
-            </div>
-            <div class="rating">
-                <p>RATING @item.Rating/10</p><br />
-                <p>Ano : @item.Data.Year</p><br />
-                <p>Duracao : @duracao</p><br />
-                @if (User.IsInRole("Gestor"))
-                {
-                    <a asp-action="Edit" asp-controller="Filmes" asp-route-id="@item.Id">Edit</a>
-                    <a asp-action="Delete" asp-controller="Filmes" asp-route-id="@item.Id"> Delete </a>
-                }
-            </div>
-        </div>
+    </div>
+    <div class="rating">
+        <p>RATING @item.Rating/10</p><br />
+        <p>Ano : @item.Data.Year</p><br />
+        <p>Duracao : @duracao</p><br />
+        @if (User.IsInRole("Gestor"))
+        {
+            <a asp-action="Edit" asp-controller="Filmes" asp-route-id="@item.Id">Edit</a>
+        }
+    </div>
+</div>
     }
     <div class="cl">&nbsp;</div>
 </div>
@@ -159,20 +99,20 @@
     @foreach (var item in Model.OrderByDescending(d => d.Duracao).Take(6))
     {
         double hours = (item.Duracao - item.Duracao % 60) / 60;
-        string duracao = "" + hours + ":" + (item.Duracao - hours * 60);
+        string duracao = "" + hours + "h :" + (item.Duracao - hours * 60) + " m";
         <div class="movie">
             <div class="movie-image">
             @if (User.Identity.IsAuthenticated)
             {
 
                 <a asp-action="FilmePag" asp-route-id="@item.Id">
-                    <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
+                    <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="capa do filme" />
                 </a>
             }
             else
             {
                 <a asp-area="Identity" asp-page="/Account/Login">
-                    <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="" />
+                    <img src="~/fotos/@item.ListasDeFotografias.OrderBy(i => i.Id).Select(p => p.Path).First()" alt="capa do filme" />
                 </a>
             }
         </div>
@@ -183,7 +123,6 @@
                 @if (User.IsInRole("Gestor"))
                 {
                     <a asp-action="Edit" asp-controller="Filmes" asp-route-id="@item.Id">Edit</a>
-                    <a asp-action="Delete" asp-controller="Filmes" asp-route-id="@item.Id"> Delete </a>
                 }
             </div>
         </div>

@@ -11,15 +11,14 @@
 
 
 
-   <div class="box">
-      @*<form asp-route-returnUrl="@Model.ReturnUrl" method="post">*@
+   <div class="box">  
       <div class="col-md-4">
          <hr />
          <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
          <div class="form-group">
             <label asp-for="Input.Email"></label>
-            <input asp-for="Input.Email" class="form-control" />
+            <input asp-for="Input.Email" class="form-control"/>
             <span asp-validation-for="Input.Email" class="text-danger"></span>
          </div>
          <div class="form-group">
@@ -52,7 +51,7 @@
           </div>
           <div class="form-group">
               <label asp-for="Input.User.CodPostal"  class="control-label"></label>
-              <input asp-for="Input.User.CodPostal" placeholder="ex. 1234-567" class="form-control" />
+              <input asp-for="Input.User.CodPostal" placeholder="formato: xxxx-xxx" class="form-control" />
               <span asp-validation-for="Input.User.CodPostal" class="text-danger"></span>
           </div>
           <div class="form-group">

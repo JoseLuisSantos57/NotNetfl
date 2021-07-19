@@ -8,10 +8,10 @@
     <div class="cabecalho">
         <h1>@Model.Titulo</h1>
     </div>
-    
+
     <iframe width="980" height="551" type="text/html" src="@Model.Path" frameborder="0" allowfullscreen></iframe>
     <div class="cl">&nbsp;</div>
-    
+
     <div class="parent">
 
         <div class="filho gen">
@@ -33,7 +33,28 @@
     <div class="cl">&nbsp;</div>
     @foreach (var photo in Model.ListasDeFotografias)
     {
-        <img src="~/fotos/@photo.Path" alt="Fotografias do filme" height="210" width="143" class="imagem"/>
+        <img src="~/fotos/@photo.Path" alt="Fotografias do filme" height="210" width="143" class="imagem" />
     }
     <p class="text-right"><a href="javascript:window.history.back();">VOLTAR</a></p>
 </div>
+@if (User.IsInRole("Gestor")) {
+<div class="form-group">
+    <form asp-action="Delete" asp-controller="Filmes">
+        @*<input type="submit" value="Edit" class="btn btn-primary" />*@
+        <input type="hidden" asp-for="Id" />
+        <span id="confirmDeleteSpan_@Model.Id" style="display:none">
+            <span>
+                De certeza que pretende apagar o filme?
+            </span><br />
+            <button type="submit" class="btn btn-danger">Sim</button>
+            <a href="#" class="btn btn-primary" onclick="confirmDelete('@Model.Id', false)">Não</a>
+        </span>
+        <span class="botaoApagar" id="deleteSpan_@Model.Id">
+            <a href="#" class="btn btn-primary" ´value="Delete" onclick="confirmDelete('@Model.Id', true)">Apagar</a>
+        </span>
+    </form>
+</div>
+}
+@section Scripts{
+    <script src="~/js/custom.js"></script>
+}

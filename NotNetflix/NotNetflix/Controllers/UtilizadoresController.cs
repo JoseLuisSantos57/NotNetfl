@@ -12,6 +12,7 @@ using NotNetflix.Models;
 
 namespace NotNetflix.Controllers
 {
+    //só os utilizadores autenticados 
     [Authorize]
     public class UtilizadoresController : Controller
     {
@@ -88,13 +89,16 @@ namespace NotNetflix.Controllers
         // POST: Utilizadores/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Email,N_telemovel,Morada,CodPostal,dataNascimento")] Utilizador newUtilizador)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Email,N_telemovel,Morada,CodPostal,dataNascimento,UserNameId")] Utilizador newUtilizador)
         {
-            Utilizador utilizador = await _context.Utilizador.FirstOrDefaultAsync(m => m.Id == id);
-            //não é possível pesquisar pelo email do newUtilizador na tabela AspUser pois o valor do email já foi alterado
-            ApplicationUser identidade = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == utilizador.UserNameId);
+            //varável com o id do utilizador autenticado
+            var meuUtilizador = _userManager.GetUserId(User);
+            ApplicationUser identidade = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == newUtilizador.UserNameId);
+            var eu = newUtilizador.UserNameId;
+           
             if (id != newUtilizador.Id || identidade == null)
             {
                 ModelState.AddModelError("", "Ocorreu um erro..");
@@ -104,19 +108,11 @@ namespace NotNetflix.Controllers
 
             if (ModelState.IsValid)
             {
-
-
                 if (newUtilizador.dataNascimento.CompareTo(DateTime.Now.AddYears(-18)) > 0)
                 {
                     ModelState.AddModelError("", "Para entrar no site é necessário ser maior de 18 anos");
                     return View(newUtilizador);
                 }
-                utilizador.Nome = newUtilizador.Nome;
-                utilizador.Morada = newUtilizador.Morada;
-                utilizador.CodPostal = newUtilizador.CodPostal;
-                utilizador.Email = newUtilizador.Email;
-                utilizador.dataNascimento = newUtilizador.dataNascimento;
-                utilizador.N_telemovel = newUtilizador.N_telemovel;
                 identidade.Email = newUtilizador.Email;
                 identidade.UserName = newUtilizador.Email;
                 identidade.NormalizedEmail = identidade.Email.ToUpper();
@@ -124,7 +120,7 @@ namespace NotNetflix.Controllers
                 try
                 {
                     _context.Users.Update(identidade);
-                    _context.Utilizador.Update(utilizador);
+                    _context.Utilizador.Update(newUtilizador);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -138,7 +134,7 @@ namespace NotNetflix.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Utilizadores", new { id=newUtilizador.Id });
             }
             return View(newUtilizador);
         }

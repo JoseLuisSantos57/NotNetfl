@@ -61,11 +61,6 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
       /// </summary>
       public string ReturnUrl { get; set; }
 
-      /// <summary>
-      /// lista das opção de autenticação externas
-      /// </summary>
-      //   public IList<AuthenticationScheme> ExternalLogins { get; set; }
-
       /*
        * Classe usada para 'transportar/recolher' os dados da Página para dentro do 'código'
        */
@@ -100,8 +95,6 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
       /// <returns></returns>
       public void OnGet(string returnUrl = null) {
          ReturnUrl = returnUrl;
-         // lista dos 'providers' para efetuar autenticação externa
-         //    ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
       }
 
 
@@ -122,15 +115,6 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
          // Se os dados forem validados pela classe 'InputModel'
          if (ModelState.IsValid) {
 
-         //var aux = new Utilizador(){
-         //           Email = Input.Email,
-         //           Morada = Input.User.Morada,
-         //           CodPostal = Input.User.CodPostal,
-         //           dataNascimento = Input.User.dataNascimento,
-         //           Nome = Input.User.Nome,
-         //           N_telemovel = Input.User.N_telemovel
-         //   };
-            
 
             // criar um objeto do tipo 'ApplicationUser'
             var user = new ApplicationUser {
@@ -138,9 +122,6 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
                Email = Input.Email,    // email do utilizador
                EmailConfirmed = true, // o email está formalmente confirmado
                LockoutEnabled = false,  // o utilizador não pode ser bloqueado
-               
-                //LockoutEnd = new DateTime(DateTime.Now.Day + 1, 1, 1),  // data em que termina o bloqueio,
-                                                                         // se não for anulado antes
                DataRegisto = DateTime.Now // data do registo
             };
 
@@ -167,10 +148,8 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
                         await _userManager.AddToRoleAsync(user, "Utilizador");
                     }
                     Input.User.Email = Input.Email; // atribuir ao objeto 'criador' o email fornecido pelo utilizador,
-                                                        // a quando da escreita dos dados na interface
-                                                        // exatamente a mesma tarefa feita na linha 128
 
-                    //Input.User.UserNameId = user.Id;  // adicionar o ID do utilizador,
+                    Input.User.UserNameId = user.Id;  // adicionar o ID do utilizador,
                        
                // estamos em condições de guardar os dados na BD
                try {
@@ -191,37 +170,13 @@ namespace NotNetflix.Areas.Identity.Pages.Account {
                   // avisar que houve um erro
                   ModelState.AddModelError("", "Ocorreu um erro na criação de dados");
                }
-
-
-
-
-
-               //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-               //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-               //var callbackUrl = Url.Page(
-               //    "/Account/ConfirmEmail",
-               //    pageHandler: null,
-               //    values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
-               //    protocol: Request.Scheme);
-
-               //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-               //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-               //if (_userManager.Options.SignIn.RequireConfirmedAccount) {   // ver linha 49 do ficheiro 'starup.cs'
-               //
-               //   return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-               //}
-               //else {
-               //   await _signInManager.SignInAsync(user, isPersistent: false);
-               //   return LocalRedirect(returnUrl);
-               //}
             }
             foreach (var error in result.Errors) {
                ModelState.AddModelError(string.Empty, error.Description);
             }
          }
 
-         // If we got this far, something failed, redisplay form
+         // Se cheguei aqui algo falhou, volta a mostrar a página
          return Page();
       }
    }

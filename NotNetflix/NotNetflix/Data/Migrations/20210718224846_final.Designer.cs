@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NotNetflix.Data;
 
 namespace NotNetflix.Data.Migrations
 {
     [DbContext(typeof(NotNetflixDataBase))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210718224846_final")]
+    partial class final
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,14 +81,14 @@ namespace NotNetflix.Data.Migrations
                         new
                         {
                             Id = "u",
-                            ConcurrencyStamp = "b9030ab2-6209-4cd4-9996-c30541e7dee1",
+                            ConcurrencyStamp = "82719e81-a8db-4251-8c69-00e65700cb15",
                             Name = "Utilizador",
                             NormalizedName = "UTILIZADOR"
                         },
                         new
                         {
                             Id = "g",
-                            ConcurrencyStamp = "3f2a44ba-54b8-4d09-a531-b7de08aa7ef1",
+                            ConcurrencyStamp = "a8bf3e26-cfc4-4032-8e19-c99b3d4d164c",
                             Name = "Gestor",
                             NormalizedName = "GESTOR"
                         });
@@ -293,8 +295,8 @@ namespace NotNetflix.Data.Migrations
                     b.Property<string>("Path")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
+                    b.Property<double>("Rating")
+                        .HasColumnType("float");
 
                     b.Property<string>("Titulo")
                         .HasMaxLength(50)

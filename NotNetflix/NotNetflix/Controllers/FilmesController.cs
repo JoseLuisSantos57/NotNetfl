@@ -69,7 +69,11 @@ namespace NotNetflix.Controllers
                 
             if (ModelState.IsValid)
                 {   
-
+                if(filme.Rating <= 0 || filme.Rating > 10)
+                {
+                    ModelState.AddModelError("", "O Valor do rating do filme tem que estar entre 1 e 10");
+                    correto = false;
+                }
                 //Verificar se a data de estreia é válida
                 if (DateTime.Compare(filme.Data, DateTime.Now) > 0)
                 {
@@ -243,19 +247,26 @@ namespace NotNetflix.Controllers
 
             if (ModelState.IsValid)
             {
+            
                 filme.Titulo = newFilme.Titulo;
 
                 filme.Descricao = newFilme.Descricao;
 
                 filme.Duracao = newFilme.Duracao;
-
+                
                 filme.Rating = newFilme.Rating;
-
                 //flag para verificar se não houve problemas com os dados introduzidos
                 bool correto = true;
                 
-                //falg para introduzir as fotografias novas
+                //flag para introduzir as fotografias novas
                 bool newFoto = false;
+
+                if (filme.Rating <= 0 || filme.Rating > 10)
+                {
+                    ModelState.AddModelError("", "O Valor do rating do filme tem que estar entre 1 e 10");
+                    correto = false;
+                }
+
                 //verificar se foram introduzidas fotografias novas
                 if (fotografias.Count()>0)
                 {
@@ -303,8 +314,9 @@ namespace NotNetflix.Controllers
                     correto = false;
                     ModelState.AddModelError("","Adicione uma data válida");
                 }
+
                 //verifica se o link introduzido possua o formato pretendido
-                if (newFilme.Path.Contains("youtube.com/embed/"))
+                if (filme.Path.Contains("youtube.com/embed/"))
                 {
                     filme.Path = newFilme.Path;
                 }
@@ -362,7 +374,7 @@ namespace NotNetflix.Controllers
 
                             modelo.Path = nomeFoto;
                             nomeFoto = Path.Combine(_caminho.WebRootPath, "fotos", nomeFoto);
-                            modelo.FilmeFK = newFilme.Id;
+                            modelo.FilmeFK = filme.Id;
                             try
                             {
                                 //criação do ficheiro da foto
@@ -445,12 +457,9 @@ namespace NotNetflix.Controllers
             var filme = await _context.Filme.FindAsync(id);
             var fotos = await _context.Fotografia.Where(p => p.FilmeFK.Equals(id)).ToListAsync();
             var generos = await _context.Filme.Include(g => g.ListasDeGeneros).Where(f => f.Id.Equals(id)).ToListAsync();
-            
-            
-            string localizacaoFicheiro = _caminho.WebRootPath;
-             var fileFilmeDelete = Path.Combine(localizacaoFicheiro, "filmes", filme.Path);
+            try { 
             _context.Filme.Remove(filme);
-            System.IO.File.Delete(fileFilmeDelete);
+            
             foreach (var gen in generos)
             {
                 _context.Filme.Remove(gen);
@@ -458,17 +467,18 @@ namespace NotNetflix.Controllers
             foreach (var foto in fotos)
             {
                 
-                var fileFotoDelete = Path.Combine(localizacaoFicheiro, "filmes", foto.Path);
+                var fileFotoDelete = Path.Combine(_caminho.WebRootPath, "fotos", foto.Path);
                 _context.Fotografia.Remove(foto);
                 System.IO.File.Delete(fileFotoDelete);
             }
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool FilmeExists(int id)
-        {
-            return _context.Filme.Any(e => e.Id == id);
+            return RedirectToAction("Index", "Home", new { area = "" });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("","Ocorreu um erro inesperado");
+                return RedirectToAction("Index", "Home", new { area = "" });
+            }
         }
     }
 }
